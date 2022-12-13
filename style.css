@@ -107,3 +107,9 @@ button.icon {
 #help .whiteText {
     color: white;
 }
+
+#counter {
+    text-align: center;
+    border: black 10px solid;
+    margin: auto;
+}

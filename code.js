@@ -101,6 +101,11 @@ var XURDLE = {};
 	document.getElementById("titleDiv").style.width = width + "px";
 	document.getElementById("myHeader").style.width = width + "px";
 
+
+	var counter = document.getElementById("counter");
+	counter.setAttribute("style","width: " + width + "px");
+	counter.style.width = width +"px";
+	
 	solIndex = puzzleNumber;
 	initDataStructures();
 	fillGrid();
