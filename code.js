@@ -14,7 +14,7 @@ var XURDLE = {};
     var reveal;
     var sp = 4;  // spacing between rows and columns
     // row height, column width, line width
-    var rh=200, cw=rh, lw=10;
+    var rh=200, cw=rh;
 
     // "guess" grid    
     var correct; // word to find during this round of guesses
@@ -38,10 +38,8 @@ var XURDLE = {};
 	gw = (5*rh - 6*sp)/6;
 	width = sp+cw+sp+5*cw+2*sp+5*(gw+sp);
     }
-    var top=rh, left=sp+cw+sp; 
-    console.log(rh);
-    console.log(width);
-    console.log(wWidth);    
+    var top=rh, left=sp+cw+sp;
+    var lw = Math.max(3,0.1 * rh);
     var height = top + 7*rh; // canvas height
     var wordFound = { "-1":0, 0:0, 1:0, 2:0, 3:0, 4:0, 5:0 };
     
@@ -674,11 +672,8 @@ var XURDLE = {};
 	    var dx, dy;
 
 	    ctx.beginPath();  // erase Canvas and do NOT draw border
-	    ctx.lineWidth = 1;
-	    ctx.strokeStyle = "white";
 	    ctx.fillStyle = "white";
-	    ctx.rect(1,1,width-2,height-2);
-	    ctx.stroke();
+	    ctx.rect(0,0,width,height);
 	    ctx.fill();
 
 	    ctx.beginPath();
@@ -703,8 +698,6 @@ var XURDLE = {};
 	    //***********************  diagonal line #1  *************************
 	    var x = left+r,
 		y = top+lw;
-	    ctx.beginPath();
-	    ctx.lineWidth = 20;
 	    var unselected = 'rgb(200,200,230)';
 	    
 	    //grid[0][0]
@@ -761,7 +754,7 @@ var XURDLE = {};
 		     's','r','r','s');
 
 	    ctx.beginPath();	    // black vertical lines in the grid
-	    ctx.lineWidth = 1;
+	    ctx.lineWidth = Math.max(2,rh*0.02);
 	    ctx.strokeStyle = "#000000";
 	    for(var c = 1; c < 5; c++)  
 	    {
@@ -845,7 +838,7 @@ var XURDLE = {};
 	ctx.beginPath();
 	ctx.strokeStyle = color;
 	ctx.fillStyle = color2;
-	ctx.lineWidth = 14;
+	ctx.lineWidth = Math.max(3,0.1*rh);;
 	// top edge
 	ctx.moveTo(left + (tl !== 's' ? r : 0),top);
 	ctx.lineTo(left+w-(tr !== 's' ? r : 0),top);
@@ -860,7 +853,7 @@ var XURDLE = {};
 	//left edge
 	if (bl === 'r')
 	    ctx.arc(left+r,top+h-r,r,pi/2,pi);
-	ctx.lineTo(left,top+(tl !== 's' ? r : -6.5));
+	ctx.lineTo(left,top+(tl !== 's' ? r : -ctx.lineWidth/2));
 	if (tl === 'r')
 	    ctx.arc(left+r,top+r,r,pi,1.5*pi);
 	ctx.stroke();
