@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Xurdle</title>
+    <title>XURDLE game</title>
     <link rel="stylesheet" href="style.css">
     <script src="./code.js"></script>
   </head>
-  <body onload="XURDLE.init(12);">
+  <body onload="XURDLE.init();">
     <header id="myHeader">
         <div class="menu">
           <button id="helpButton" class="icon" onclick="XURDLE.showHelp()" aria-label="help">
@@ -124,12 +124,12 @@
 	</game-icon>
       </button>
       <p class="center">STATISTICS</p>
-      <canvas id="statsCanvas"></canvas>
-	</div>
-    <canvas id="canvas"></canvas>
 
+    </div>
+    <div id="canvasDiv">
+    </div>
     <div id="counter">
-<!-- Default Statcounter code for XURDLE game
+      <!-- Default Statcounter code for XURDLE game
 http://furcyd.github.io/XURDLE -->
 <script type="text/javascript">
 var sc_project=12826720; 
