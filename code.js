@@ -779,13 +779,12 @@ var XURDLE = {};
 	    ctx.stroke();
 
 	    for(var r = 0; r < 5; r++)         // draw arrows
-		drawArrow(ctx,left-15,top + rh/2 + r *rh,
-			  rh, horizWordColor, selectedArrow === r);
-
-	    drawDiagonalArrow(ctx,left-15, top-15,rh,diagWordColor,
+		drawArrow(ctx,left-0.6*cw-lw,top+(r*rh)+0.245*rh,
+			  0.49*rh, horizWordColor, selectedArrow === r);
+	    drawDiagonalArrow(ctx,left-0.7*cw,top-0.49*rh,0.49*rh,diagWordColor,
 			      selectedArrow === -1);
 
-	    drawDiagonalArrow2(ctx,left-15, top+5*rh+15,rh,diag2WordColor,
+	    drawDiagonalArrow2(ctx,left-0.7*cw, top+5*rh,0.49*rh,diag2WordColor,
 			       selectedArrow === 5);
 
 	    for( var r = 0; r < 5; r++)         // draw letters
@@ -870,93 +869,85 @@ var XURDLE = {};
 
     function drawArrow(ctx,x,y,h,color,frame)
     {
+	var u = h/8; // grid size of this arrow's box whose size if 10u by 7u
 	ctx.lineWidth = 1;
 	// first, erase the existing arrow
 	ctx.beginPath();
-	ctx.strokeStyle = 'rgb(255, 255, 255,1.0)';
-	ctx.fillStyle = 'rgb(255, 255, 255,1.0)';    
-	ctx.rect(x-41, y-h/5 - 6, 47, 2*h/5 + 12);    
-	ctx.stroke();
+	ctx.fillStyle = 'white';
+	ctx.rect(x,y,10*u,8*u);    
 	ctx.fill();
 	ctx.closePath();
 
 	if (frame)
 	{
     	    ctx.beginPath();
-	    myRoundRect(ctx,x-40, y-h/5 - 5, 45, 2*h/5 + 10, 10);	
-	    ctx.strokeStyle = 'rgba(0, 0, 0, 1.0)';   
+	    myRoundRect(ctx,x,y,10*u-sp/2,8*u,10)
+	    ctx.strokeStyle = 'black';
+	    ctx.fillStyle = 'rgb(240,240,240)';	    
+	    ctx.fill();
 	    ctx.stroke();
 	    ctx.closePath();	
 	}
 
 	ctx.beginPath();
 	ctx.fillStyle = color;
-	ctx.moveTo(x,y);
-	ctx.lineTo(x-15,y-h/5);
-	ctx.lineTo(x-15,y-h/12);
-	ctx.lineTo(x-35,y-h/12);
-	ctx.lineTo(x-35,y+h/12);
-	ctx.lineTo(x-15,y+h/12);
-	ctx.lineTo(x-15,y+h/5);
+	x += u;         y += 2.5*u;     ctx.moveTo(x,y);
+	x += 5*u;                       ctx.lineTo(x,y);
+	                y -= 2*u;       ctx.lineTo(x,y);
+	x += 3*u;       y += 3.5*u;       ctx.lineTo(x,y);
+	x -= 3*u;       y += 3.5*u;       ctx.lineTo(x,y);	
+	y -= 2*u;                       ctx.lineTo(x,y);
+	x -= 5*u;                       ctx.lineTo(x,y);	
 	ctx.fill();
 	ctx.closePath();
+
     }// drawArrow
 
 
-    function drawDiagonalArrow(ctx,x,y,w,color,frame)
+    function drawDiagonalArrow(ctx,x,y,h,color,frame)
     {
-	ctx.save();
-	ctx.translate(x,y);
-	ctx.rotate(Math.PI/4);
-	drawArrow(ctx,0,0,w,color,frame);
-	ctx.restore();
-    }// drawDiagonalArrow
-
-    function drawDiagonalArrow2(ctx,x,y,w,color,frame)
-    {
-	ctx.save();
-	ctx.translate(x,y);
-	ctx.rotate(-Math.PI/4);
-	drawArrow(ctx,0,0,w,color,frame);
-	ctx.restore();
-    }// drawDiagonalArrow2
-
-    // *** TODO ***: refactor by rotating horizontal arrow
-    function drawDownArrow(ctx,x,y,w,color,frame)
-    {
+	var u = h/7; // grid size of this arrow's box whose size if 10u by 7u
 	ctx.lineWidth = 1;
 	// first, erase the existing arrow
 	ctx.beginPath();
-	ctx.strokeStyle = 'rgb(255, 255, 255,1.0)';
-	ctx.fillStyle = 'rgb(255, 255, 255,1.0)';    
-	ctx.rect(x-w/5-6, y-41, 2*w/5 + 12, 47);
-	ctx.stroke();
+	ctx.fillStyle = 'white';    
+	ctx.rect(x,y,10*u,7*u);    
 	ctx.fill();
 	ctx.closePath();
-	
-	if (frame)	
+
+	if (frame)
 	{
-	    ctx.beginPath();
-	    myRoundRect(ctx,x-w/5-5, y-40, 2*w/5 + 10, 45, 10);
-	    ctx.strokeStyle = 'rgba(0, 0, 0, 1.0)';   
-	    ctx.stroke();
+    	    ctx.beginPath();
+	    myRoundRect(ctx,x, y,10*u,7*u, 10);
+	    ctx.fillStyle = 'rgb(240,240,240)';	    	    
+	    ctx.strokeStyle = 'black';   
+	    ctx.fill();
+	    ctx.stroke();	    
 	    ctx.closePath();	
 	}
-
 	ctx.beginPath();
 	ctx.fillStyle = color;
-	ctx.strokeStyle = color;    
-	ctx.moveTo(x,y);
-	ctx.lineTo(x+w/5,y-15);
-	ctx.lineTo(x+w/12,y-15);
-	ctx.lineTo(x+w/12,y-35);
-	ctx.lineTo(x-w/12,y-35);
-	ctx.lineTo(x-w/12,y-15);
-	ctx.lineTo(x-w/5,y-15);
+	x += u;         y += u;         ctx.moveTo(x,y);
+	x += 5*u;                       ctx.lineTo(x,y);
+	x += 2*u;       y += 2*u;       ctx.lineTo(x,y);
+	x += u;         y -= u;         ctx.lineTo(x,y);
+	                y += 4*u;       ctx.lineTo(x,y);
+	x -= 4*u;                       ctx.lineTo(x,y);
+	x += u;         y -= u;         ctx.lineTo(x,y);
+	x -= 1.5*u;     y -= 1.5*u;     ctx.lineTo(x,y);	
+	x -= 3.5*u;                       ctx.lineTo(x,y);
 	ctx.fill();
-	ctx.stroke();
 	ctx.closePath();
-    }// drawDownArrow
+    }// drawDiagonalArrow
+
+    function drawDiagonalArrow2(ctx,x,y,h,color,frame)
+    {
+	ctx.save();
+	ctx.translate(x,y);	
+	ctx.transform(1, 0, 0, -1, 0, h)
+	drawDiagonalArrow(ctx,0,0,h,color,frame);
+	ctx.restore();
+    }// drawDiagonalArrow2
 
     // end of code
 
