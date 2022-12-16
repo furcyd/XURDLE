@@ -47,6 +47,7 @@ var XURDLE = {};
 	gw = (5*rh - 6*sp)/6;
 	width = sp+cw+sp+5*cw+2*sp+5*(gw+sp);
     }
+    width = wWidth;
     if (portrait)
 	gw = rh;
     rh /= 1.5;
@@ -308,12 +309,14 @@ var XURDLE = {};
 
     function drawKeyboard()
     {
-	var cw = canvas.style.width.slice(0,-2);  // canvas width
+	//var cw = canvas.style.width.slice(0,-2);  // canvas width
+	var cw = width;
 	var ch = canvas.style.height.slice(0,-2); // canvas height
-	var sp = 2;  // space between keys
-	var left = 10;
-	var w = (cw - 2*left - 9*sp) / 10;
-	var h = w;
+	var sp = 20;  // space between keys
+	var rowSp = 50;
+	var left = 0;
+	var w = (cw - 9*sp) / 10;
+	var h = 1.3*w;
 	var top = height - 3 * (h+sp);
 	
 	var keyboardGeometry =
@@ -326,7 +329,7 @@ var XURDLE = {};
 	    {
 		ctx.beginPath();
 		var x = left + i * (w+sp);
-		var y = top + r*(h+sp);
+		var y = top + r*(h+rowSp);
 		ctx.fillStyle = "lightGray";
 		ctx.roundRect(x, y, w, h,10);
 		ctx.fill();
