@@ -58,7 +58,7 @@ var XURDLE = {};
     if (portrait)
 	height = top + 12*rh;
     var wordFound = { "-1":0, 0:0, 1:0, 2:0, 3:0, 4:0, 5:0 };
-    height = 2000;
+    height = wHeight;
     // colors
     var bkgColor = 'white';
     var diag2WordColor = "rgba(50,120,200,1)";
@@ -147,12 +147,12 @@ var XURDLE = {};
 	const rect = canvas.getBoundingClientRect()
 	const x = event.clientX - rect.left
 	const y = event.clientY - rect.top
-	//console.log("x = " + x + " y = " + y);
+	console.log("x = " + x + " y = " + y);
 	const kb = keyboardGeometry;
-	//console.log("top = " + kb["top"] + " h = " + kb["h"]);	
+	console.log("top = " + kb["top"] + " h = " + kb["h"]);	
 	const row = Math.floor((y - kb["top"]) / kb["h"]);
 	const col = Math.floor((x - kb["left"]) / (kb["w"]+kb["sp"]));
-	//console.log(row + " " + col);
+	console.log("row = " + row + " col = " + col);
 	if (row >= 0 && row <= 2 && col >= 0 && col <= 9)
 	    return keys[row][col];
     }
@@ -160,7 +160,7 @@ var XURDLE = {};
     function handleClick(e)
     {
 	const key = getKey(mainCanvas,e);
-	//console.log("key = " + key);
+	console.log("key = " + key);
 	switch(key)
 	{
 	    case "u":
@@ -310,11 +310,12 @@ var XURDLE = {};
     {
 	var cw = canvas.style.width.slice(0,-2);  // canvas width
 	var ch = canvas.style.height.slice(0,-2); // canvas height
-	var sp = 10;  // space between keys
-	var top = 700;
+	var sp = 2;  // space between keys
 	var left = 10;
 	var w = (cw - 2*left - 9*sp) / 10;
 	var h = w;
+	var top = height - 3 * (h+sp);
+	
 	var keyboardGeometry =
 	    { "top": top, "left": left, "w": w, "h": h, "sp":sp };
 	if (canvas.getContext)
