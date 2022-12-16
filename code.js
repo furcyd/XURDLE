@@ -26,6 +26,11 @@ var XURDLE = {};
     var gStyles = [ ["","","","",""],["","","","",""],["","","","",""],
 		    ["","","","",""],["","","","",""],["","","","",""]];
 
+    var keyboardGeometry;
+    var keys = [ [ "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" ],
+		 [ "A", "S", "D", "F", "G", "H", "J", "K", "L", "u"],
+		 [ "ENTER", "Z", "X", "C", "V", "B", "N", "M", "b","d"] ];
+
     var wWidth = window.innerWidth     // browser window's width
 	|| document.documentElement.clientWidth
 	|| document.body.clientWidth;
@@ -96,7 +101,6 @@ var XURDLE = {};
 	rh /= 1.5;
 	cw /= 1.5;
 	gw /= 2;
-
 	redraw();
 	*/
     }
@@ -135,19 +139,54 @@ var XURDLE = {};
 	drawGrid();
 	drawGuesses();
 	//drawHeaderAndFooter();
-	drawKeyboard();
+	keyboardGeometry = drawKeyboard();
     }
 
-    function getCursorPosition(canvas, event) {
+    function getKey(canvas, event)
+    {
 	const rect = canvas.getBoundingClientRect()
 	const x = event.clientX - rect.left
 	const y = event.clientY - rect.top
-	console.log("x: " + x + " y: " + y)
+	//console.log("x = " + x + " y = " + y);
+	const kb = keyboardGeometry;
+	//console.log("top = " + kb["top"] + " h = " + kb["h"]);	
+	const row = Math.floor((y - kb["top"]) / kb["h"]);
+	const col = Math.floor((x - kb["left"]) / (kb["w"]+kb["sp"]));
+	//console.log(row + " " + col);
+	if (row >= 0 && row <= 2 && col >= 0 && col <= 9)
+	    return keys[row][col];
     }
 
-    function testClick(e)
+    function handleClick(e)
     {
-	getCursorPosition(mainCanvas,e);
+	const key = getKey(mainCanvas,e);
+	//console.log("key = " + key);
+	switch(key)
+	{
+	    case "u":
+	    e.keyCode = 38;
+	    e.key = "ArrowUp";
+	    handleKeyDown( e );
+	    break;
+
+	    case "d":
+	    e.keyCode = 40;
+	    e.key = "ArrowDown";
+	    break;
+	    case "ENTER":
+	    e.keyCode = 13;
+	    e.key = "Enter";
+	    break;
+	    case "b":
+	    e.keyCode = 8;
+	    e.key = "Backspace";
+	    break;
+	    default:
+	    e.keyCode = key.charCodeAt(0);
+	    e.key = key;
+	    break;
+	}
+	handleKeyDown( e );
     }
     
     function init()
@@ -166,7 +205,7 @@ var XURDLE = {};
 	    mainCanvas = createHiDPICanvas(width,height,4); // higher resolution
 	    mainCanvas.setAttribute("id","canvas");
 	    document.getElementById("canvasDiv").appendChild( mainCanvas );
-	    mainCanvas.addEventListener('click', testClick);	    
+	    mainCanvas.addEventListener('click', handleClick);	    
 	    
 	    // stats tab
 	    statsDiv = document.getElementById("stats");
@@ -276,14 +315,13 @@ var XURDLE = {};
 	var left = 10;
 	var w = (cw - 2*left - 9*sp) / 10;
 	var h = w;
-	var row = [ [ "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" ],
-		    [ "A", "S", "D", "F", "G", "H", "J", "K", "L", "u"],
-		    [ "ENTER", "Z", "X", "C", "V", "B", "N", "M", "b","d"] ];
+	var keyboardGeometry =
+	    { "top": top, "left": left, "w": w, "h": h, "sp":sp };
 	if (canvas.getContext)
 	{
 	    const ctx = canvas.getContext("2d");
-	    for( var r = 0; r < row.length; r++)	    
-		for( var i = 0; i < row[r].length; i++)
+	    for( var r = 0; r < keys.length; r++)	    
+		for( var i = 0; i < keys[r].length; i++)
 	    {
 		ctx.beginPath();
 		var x = left + i * (w+sp);
@@ -291,22 +329,23 @@ var XURDLE = {};
 		ctx.fillStyle = "lightGray";
 		ctx.roundRect(x, y, w, h,10);
 		ctx.fill();
-		switch (row[r][i])
+		switch (keys[r][i])
 		{
-		    case "u":
+		    case "u":  // up key
 		    drawUpSign(ctx,x + w/2, y+0.35*h, w, h/3,true);
 		    break;
-		    case "d":
+		    case "d":  // down key
 		    drawUpSign(ctx,x + w/2, y+0.65*h, w, h/3,false);
 		    break;
-		    case "b":
+		    case "b":  // backspace/delete
 		    drawDeleteSign(ctx,x + w/2.3, y+0.35*h, w, h/3);
 		    break;	    		    
-		    default:
-		    drawLetter(ctx,row[r][i], x + w/2, y+0.65*h, w, h/3,
+		    default:   // letter keys
+		    drawLetter(ctx,keys[r][i], x + w/2, y+0.65*h, w, h/3,
 			       'black',1,'center');
 		}
 	    }
+	    return keyboardGeometry;
 	}
     }
 
@@ -326,7 +365,7 @@ var XURDLE = {};
     {
 	ctx.beginPath();
 	ctx.strokeStyle = 'black';
-	ctx.lineWidth = 5;
+	ctx.lineWidth = 8;
 	ctx.moveTo(x,y);
 	ctx.lineTo(x+w/3,y);
 	ctx.lineTo(x+w/3,y+w/3);
@@ -336,7 +375,7 @@ var XURDLE = {};
 	ctx.stroke();	
 	ctx.beginPath();
 	ctx.strokeStyle = 'black';
-	ctx.lineWidth = 7;
+	ctx.lineWidth = 10;
 	x -= w/30;
 	ctx.moveTo(x+w/15,y+w/15);
 	ctx.lineTo(x+4*w/15,y+4*w/15);
@@ -444,7 +483,8 @@ var XURDLE = {};
     {
 	var code = Number(event.keyCode);	
 	var key = event.key;
-	
+
+	//console.log(code + " " + key);
 	if (currentTab !== mainCanvas)
 	    return;
 	
@@ -478,8 +518,9 @@ var XURDLE = {};
 		    mode = "guess";
 		    correct = getWordInGrid(selectedArrow);
 		}
+	    if (event.stopPropagation)
 		event.stopPropagation();
-		redraw();
+	    redraw();
 	    }
 	    if (mode === "guess")
 	    {
