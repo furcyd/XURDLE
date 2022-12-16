@@ -332,6 +332,8 @@ var XURDLE = {};
 	if (canvas.getContext)
 	{
 	    const ctx = canvas.getContext("2d");
+	    drawLetter(ctx,portrait+"", 100,100,400,20,
+				       'black',1,'center');
 	    for( var r = 0; r < keys.length; r++)	    
 		for( var i = 0; i < keys[r].length; i++)
 	    {
