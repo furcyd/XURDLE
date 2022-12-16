@@ -3,7 +3,7 @@ var XURDLE = {};
 (function() {
     "use strict";
 
-    var mainCanvas, help, statsDiv, statsCanvas, currentTab;
+    var header, mainCanvas, help, statsDiv, statsCanvas, currentTab;
     var problemNumber;
     const pi = Math.PI;
     var mode;
@@ -15,7 +15,7 @@ var XURDLE = {};
     var sp = 4;  // spacing between rows and columns
     // row height, column width, line width
     var rh=200, cw=rh;
-
+    
     // "guess" grid    
     var correct; // word to find during this round of guesses
     var guessNumber = 0;
@@ -37,9 +37,13 @@ var XURDLE = {};
     var wHeight = window.innerHeight     // browser window's height
 	|| document.documentElement.clientHeight
 	|| document.body.clientHeight;
-    var portrait = wWidth < wHeight;
+    var width = wWidth - 10;
+    var height = wHeight;
+    var cWidth = width;
+    var cHeight = height - 30;;
+    var portrait = height > width;
     var gw = (5*rh - 6*sp)/6;
-    var width = sp+cw+sp+5*(cw+sp)+5*(gw+sp); // canvas width
+    /*
     while (width > 0.95*wWidth)  // adjust to fit window's width
     {
 	rh -= 1;
@@ -47,7 +51,7 @@ var XURDLE = {};
 	gw = (5*rh - 6*sp)/6;
 	width = sp+cw+sp+5*cw+2*sp+5*(gw+sp);
     }
-    width = wWidth;
+*/
     if (portrait)
 	gw = rh;
     rh /= 1.5;
@@ -55,11 +59,11 @@ var XURDLE = {};
     gw /= 2;
     var top=rh, left=sp+cw+sp;
     var lw = Math.max(3,0.1 * rh);
-    var height = top + 7*rh; // canvas height
-    if (portrait)
-	height = top + 12*rh;
+    //var height = top + 7*rh; // canvas height
+
+    //if (portrait)
+//	height = top + 12*rh;
     var wordFound = { "-1":0, 0:0, 1:0, 2:0, 3:0, 4:0, 5:0 };
-    height = wHeight;
     // colors
     var bkgColor = 'white';
     var diag2WordColor = "rgba(50,120,200,1)";
@@ -80,30 +84,7 @@ var XURDLE = {};
     
     function resizeCanvas()
     {
-	/* 
-	wWidth = window.innerWidth     // browser window's width
-	    || document.documentElement.clientWidth
-	    || document.body.clientWidth;
-	wHeight = window.innerHeight     // browser window's height
-	    || document.documentElement.clientHeight
-	    || document.body.clientHeight;
-	portrait = wWidth < wHeight;
-	gw = (5*rh - 6*sp)/6;
-	width = sp+cw+sp+5*(cw+sp)+5*(gw+sp); // canvas width
-	while (width > 0.95*wWidth)  // adjust to fit window's width
-	{
-	    rh -= 1;
-	    cw = rh;
-	    gw = (5*rh - 6*sp)/6;
-	    width = sp+cw+sp+5*cw+2*sp+5*(gw+sp);
-	}
-	if (portrait)
-	    gw = rh;
-	rh /= 1.5;
-	cw /= 1.5;
-	gw /= 2;
-	redraw();
-	*/
+
     }
 
     /******************************************************************
@@ -137,10 +118,26 @@ var XURDLE = {};
 
     function redraw()
     {
+	const ctx = mainCanvas.getContext("2d");
+	ctx.beginPath();
+	ctx.fillStyle = "red";
+	ctx.strokeStyle = "black";
+	ctx.lineWidth =2;
+	var width = Math.floor(mainCanvas.style.width.slice(0,-2));
+	var height = mainCanvas.style.height.slice(0,-2);	
+	console.log(width);
+	ctx.rect(5, 5,cWidth-10,cHeight-10);
+	ctx.fill();
+	ctx.stroke();	
+	ctx.closePath();
+	/*
 	drawGrid();
 	drawGuesses();
 	//drawHeaderAndFooter();
+	*/
 	keyboardGeometry = drawKeyboard();
+
+	
     }
 
     function getKey(canvas, event)
@@ -192,7 +189,13 @@ var XURDLE = {};
     
     function init()
     {
-	
+	//console.log("avail:  " + width + " by " + height);
+	//console.log("window: " + wWidth + " by " + wHeight);
+	document.getElementById("myHeader").height = 100;
+	console.log ("hello " + document.getElementById("myHeader"));
+	document.getElementById("myHeader").style.width = width + "px";
+
+	//document.getElementById("myHeader").style.height = 30 + "px";
 	// game is NOT already loaded: create the game gadgets
 	if (! mainCanvas)
 	{
@@ -200,10 +203,10 @@ var XURDLE = {};
 	    //window.addEventListener('resize', resizeCanvas);	    
 	
 	    // game header
-	    document.getElementById("titleDiv").style.width = width + "px";
-	    document.getElementById("myHeader").style.width = width + "px";
+	    document.getElementById("titleDiv").style.width = "100%"; //wWidth + "px";
+
 	    // main game canvas
-	    mainCanvas = createHiDPICanvas(width,height,4); // higher resolution
+	    mainCanvas = createHiDPICanvas(cWidth, cHeight, 4); // higher resolution
 	    mainCanvas.setAttribute("id","canvas");
 	    document.getElementById("canvasDiv").appendChild( mainCanvas );
 	    mainCanvas.addEventListener('click', handleClick);	    
@@ -224,7 +227,10 @@ var XURDLE = {};
 	    //counter.setAttribute("style","width: " + width + "px");
 	    counter.style.width = width +"px";
 	}// game widgets creation
-	
+
+	width = mainCanvas.style.width.slice(0,-2);
+	height = mainCanvas.style.height.slice(0,-2);
+	console.log(width + " by " + height);
 	currentTab = mainCanvas;
 
 	// is local storage empty?
@@ -310,17 +316,19 @@ var XURDLE = {};
     function drawKeyboard()
     {
 	//var cw = canvas.style.width.slice(0,-2);  // canvas width
-	var cw = width;
-	var ch = canvas.style.height.slice(0,-2); // canvas height
-	var sp = 20;  // space between keys
-	var rowSp = 50;
-	var left = 0;
-	var w = (cw - 9*sp) / 10;
-	var h = 1.3*w;
-	var top = height - 3 * (h+sp);
-	
-	var keyboardGeometry =
-	    { "top": top, "left": left, "w": w, "h": h, "sp":sp };
+	var sp, rowSp, left, top, w, h, x, y, keyboardGeometry;
+	if (portrait)
+	{
+	    left = 10;
+	    w = (width - 2*left)/ 10.9;
+	    sp = 0.1*w;
+	    rowSp = 0.3*w;	    
+	    h = 1.1*w;
+	    top = cHeight - 3*h - 2*sp;
+	    
+	    keyboardGeometry =
+		{ "top": top, "left": left, "w": w, "h": h, "sp":sp };
+	}
 	if (canvas.getContext)
 	{
 	    const ctx = canvas.getContext("2d");
