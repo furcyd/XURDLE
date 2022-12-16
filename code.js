@@ -29,6 +29,10 @@ var XURDLE = {};
     var wWidth = window.innerWidth     // browser window's width
 	|| document.documentElement.clientWidth
 	|| document.body.clientWidth;
+    var wHeight = window.innerHeight     // browser window's height
+	|| document.documentElement.clientHeight
+	|| document.body.clientHeight;
+    var portrait = wWidth < wHeight;
     var gw = (5*rh - 6*sp)/6;
     var width = sp+cw+sp+5*(cw+sp)+5*(gw+sp); // canvas width
     while (width > 0.95*wWidth)  // adjust to fit window's width
@@ -38,11 +42,18 @@ var XURDLE = {};
 	gw = (5*rh - 6*sp)/6;
 	width = sp+cw+sp+5*cw+2*sp+5*(gw+sp);
     }
+    if (portrait)
+	gw = rh;
+    rh /= 1.5;
+    cw /= 1.5;
+    gw /= 2;
     var top=rh, left=sp+cw+sp;
     var lw = Math.max(3,0.1 * rh);
     var height = top + 7*rh; // canvas height
+    if (portrait)
+	height = top + 12*rh;
     var wordFound = { "-1":0, 0:0, 1:0, 2:0, 3:0, 4:0, 5:0 };
-    
+    height = 2000;
     // colors
     var bkgColor = 'white';
     var diag2WordColor = "rgba(50,120,200,1)";
@@ -58,6 +69,36 @@ var XURDLE = {};
     function saveToLS(key,value)
     {
 	return window.localStorage.setItem(key,JSON.stringify(value));
+    }
+
+    
+    function resizeCanvas()
+    {
+	/* 
+	wWidth = window.innerWidth     // browser window's width
+	    || document.documentElement.clientWidth
+	    || document.body.clientWidth;
+	wHeight = window.innerHeight     // browser window's height
+	    || document.documentElement.clientHeight
+	    || document.body.clientHeight;
+	portrait = wWidth < wHeight;
+	gw = (5*rh - 6*sp)/6;
+	width = sp+cw+sp+5*(cw+sp)+5*(gw+sp); // canvas width
+	while (width > 0.95*wWidth)  // adjust to fit window's width
+	{
+	    rh -= 1;
+	    cw = rh;
+	    gw = (5*rh - 6*sp)/6;
+	    width = sp+cw+sp+5*cw+2*sp+5*(gw+sp);
+	}
+	if (portrait)
+	    gw = rh;
+	rh /= 1.5;
+	cw /= 1.5;
+	gw /= 2;
+
+	redraw();
+	*/
     }
 
     /******************************************************************
@@ -93,9 +134,22 @@ var XURDLE = {};
     {
 	drawGrid();
 	drawGuesses();
-	drawHeaderAndFooter();
+	//drawHeaderAndFooter();
+	drawKeyboard();
     }
 
+    function getCursorPosition(canvas, event) {
+	const rect = canvas.getBoundingClientRect()
+	const x = event.clientX - rect.left
+	const y = event.clientY - rect.top
+	console.log("x: " + x + " y: " + y)
+    }
+
+    function testClick(e)
+    {
+	getCursorPosition(mainCanvas,e);
+    }
+    
     function init()
     {
 	
@@ -103,6 +157,7 @@ var XURDLE = {};
 	if (! mainCanvas)
 	{
 	    document.addEventListener('keydown', handleKeyDown);
+	    //window.addEventListener('resize', resizeCanvas);	    
 	
 	    // game header
 	    document.getElementById("titleDiv").style.width = width + "px";
@@ -111,6 +166,8 @@ var XURDLE = {};
 	    mainCanvas = createHiDPICanvas(width,height,4); // higher resolution
 	    mainCanvas.setAttribute("id","canvas");
 	    document.getElementById("canvasDiv").appendChild( mainCanvas );
+	    mainCanvas.addEventListener('click', testClick);	    
+	    
 	    // stats tab
 	    statsDiv = document.getElementById("stats");
 	    statsCanvas = createHiDPICanvas(width,height,4); // hi resolution!
@@ -210,6 +267,86 @@ var XURDLE = {};
 	currentTab = mainCanvas;
     }
 
+    function drawKeyboard()
+    {
+	var cw = canvas.style.width.slice(0,-2);  // canvas width
+	var ch = canvas.style.height.slice(0,-2); // canvas height
+	var sp = 10;  // space between keys
+	var top = 700;
+	var left = 10;
+	var w = (cw - 2*left - 9*sp) / 10;
+	var h = w;
+	var row = [ [ "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" ],
+		    [ "A", "S", "D", "F", "G", "H", "J", "K", "L", "u"],
+		    [ "ENTER", "Z", "X", "C", "V", "B", "N", "M", "b","d"] ];
+	if (canvas.getContext)
+	{
+	    const ctx = canvas.getContext("2d");
+	    for( var r = 0; r < row.length; r++)	    
+		for( var i = 0; i < row[r].length; i++)
+	    {
+		ctx.beginPath();
+		var x = left + i * (w+sp);
+		var y = top + r*(h+sp);
+		ctx.fillStyle = "lightGray";
+		ctx.roundRect(x, y, w, h,10);
+		ctx.fill();
+		switch (row[r][i])
+		{
+		    case "u":
+		    drawUpSign(ctx,x + w/2, y+0.35*h, w, h/3,true);
+		    break;
+		    case "d":
+		    drawUpSign(ctx,x + w/2, y+0.65*h, w, h/3,false);
+		    break;
+		    case "b":
+		    drawDeleteSign(ctx,x + w/2.3, y+0.35*h, w, h/3);
+		    break;	    		    
+		    default:
+		    drawLetter(ctx,row[r][i], x + w/2, y+0.65*h, w, h/3,
+			       'black',1,'center');
+		}
+	    }
+	}
+    }
+
+    function drawUpSign(ctx,x,y,w,h,up)
+    {
+	ctx.beginPath();
+	ctx.lineWith = 1;
+	ctx.fillStyle = 'black';
+	ctx.moveTo(x,y);
+	ctx.lineTo(x+w/6,y+(up? h : -h));
+	ctx.lineTo(x-w/6,y+(up? h : -h));	
+	ctx.closePath();	
+	ctx.fill();
+    }
+
+    function drawDeleteSign(ctx,x,y,w,h)
+    {
+	ctx.beginPath();
+	ctx.strokeStyle = 'black';
+	ctx.lineWidth = 5;
+	ctx.moveTo(x,y);
+	ctx.lineTo(x+w/3,y);
+	ctx.lineTo(x+w/3,y+w/3);
+	ctx.lineTo(x,y+w/3);
+	ctx.lineTo(x-w/5,y+w/6);			
+	ctx.closePath();
+	ctx.stroke();	
+	ctx.beginPath();
+	ctx.strokeStyle = 'black';
+	ctx.lineWidth = 7;
+	x -= w/30;
+	ctx.moveTo(x+w/15,y+w/15);
+	ctx.lineTo(x+4*w/15,y+4*w/15);
+	ctx.moveTo(x+4*w/15,y+w/15);
+	ctx.lineTo(x+w/15,y+4*w/15);		
+	ctx.stroke();
+
+
+    }
+    
     function drawStats()
     {
 	var canvas = statsCanvas;
@@ -569,11 +706,19 @@ var XURDLE = {};
 
     function drawGuesses()
     {
-	var x = left+5*cw+2*sp, y = top;
+	var x, y;
+	if (! portrait)
+	{
+	    x = left+5*cw+2*sp;
+	    y = top;
+	} else
+	{
+	    x = 0.05 * width + rh;
+	    y = top + 6 * rh;
+	}
 	if (mainCanvas.getContext)
 	{
             const ctx = mainCanvas.getContext("2d");
-	    //ctx.rect(x,y,5*rh,5*rh);
 	    for( var r = 0; r < 6; r++)
 	    {
 		for(var c = 0; c < 5; c++)	   
@@ -593,7 +738,7 @@ var XURDLE = {};
 		    if (guesses[r][c] !== "")
 		    {
 			drawLetter(ctx,guesses[r][c],
-				   x + c*(gw+sp) + gw/2,y+r*(gw+sp)+gw,
+				   x + c*(gw+sp) + gw/2, y+r*(gw+sp)+gw-0.2*gw,
 				   gw,0.8*gw,
 				   gStyles[r][c] === '' ? 'black' : 'white',true);
 		    }
@@ -760,6 +905,7 @@ var XURDLE = {};
 	    {
 		for(var r = 0; r < 5; r++)
 		{
+
 		    if ( (r===0 && (c===2 || c===3)) ||
 			 (r===2 && (c===1 || c===4)) ||
 			 (r===4 && (c===2 || c===3)) )		     
@@ -768,6 +914,9 @@ var XURDLE = {};
 			ctx.lineTo(left + c*cw, top+r*rh+rh-lw/2);
 		    }
 		}
+		
+		//ctx.moveTo(left + c*cw, top);
+		//ctx.lineTo(left + c*cw, top+5*rh);
 	    }
 	    ctx.stroke();
 
