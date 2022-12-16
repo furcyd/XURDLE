@@ -14,7 +14,7 @@ var XURDLE = {};
     var reveal;
     var sp = 4;  // spacing between rows and columns
     // row height, column width, line width
-    var rh=200, cw=rh;
+    var rh, cw;
     
     // "guess" grid    
     var correct; // word to find during this round of guesses
@@ -66,8 +66,8 @@ var XURDLE = {};
     var wordFound = { "-1":0, 0:0, 1:0, 2:0, 3:0, 4:0, 5:0 };
     // colors
     var bkgColor = 'white';
-    var diag2WordColor = "rgba(50,120,200,1)";
-    var horizWordColor = "rgba(0,200,255,1)";    
+    var diag2WordColor = "rgba(250,100,100,1)";    
+    var horizWordColor = "rgba(50,120,200,1)";
     var diagWordColor = diag2WordColor;
     var centerColor = diag2WordColor;
 
@@ -119,6 +119,7 @@ var XURDLE = {};
     function redraw()
     {
 	const ctx = mainCanvas.getContext("2d");
+	/*
 	ctx.beginPath();
 	ctx.fillStyle = "red";
 	ctx.strokeStyle = "black";
@@ -130,12 +131,16 @@ var XURDLE = {};
 	ctx.fill();
 	ctx.stroke();	
 	ctx.closePath();
-	/*
+	*/
+
+	keyboardGeometry = drawKeyboard();
 	drawGrid();
+	
+	/*
 	drawGuesses();
 	//drawHeaderAndFooter();
 	*/
-	keyboardGeometry = drawKeyboard();
+
 
 	
     }
@@ -315,24 +320,32 @@ var XURDLE = {};
 
     function drawKeyboard()
     {
-	//var cw = canvas.style.width.slice(0,-2);  // canvas width
-	var sp, rowSp, left, top, w, h, x, y, keyboardGeometry;
-	if (portrait)
-	{
-	    left = 10;
-	    w = (width - 2*left)/ 10.9;
-	    sp = 0.1*w;
-	    rowSp = 0.2*w;	    
-	    h = 1.1*w;
-	    top = cHeight - 10 - 3*h - 2*rowSp;	    
-	    keyboardGeometry =
-		{ "top": top, "left": left, "w": w, "h": h, "sp":sp };
-	}
 	if (mainCanvas.getContext)
 	{
 	    const ctx = mainCanvas.getContext("2d");
-	    drawLetter(ctx,portrait+"", 100,100,400,20,
-				       'black',1,'center');
+	    
+	    ctx.beginPath();  // erase Canvas and do NOT draw border
+	    ctx.fillStyle = "white";
+	    ctx.rect(0,0,width,height);
+	    ctx.fill();
+
+	    //var cw = canvas.style.width.slice(0,-2);  // canvas width
+	    var sp, rowSp, left, top, w, h, x, y, keyboardGeometry;
+	    if (portrait)
+	    {
+		left = 10;
+		w = (width - 2*left)/ 10.9;
+		sp = 0.1*w;
+		rowSp = 0.2*w;	    
+		h = 1.1*w;
+		top = cHeight - 10 - 3*h - 2*rowSp;	    
+		keyboardGeometry =
+		    { "top": top, "left": left, "w": w, "h": h, "sp":sp };
+	    }
+
+
+	    //drawLetter(ctx,portrait+"", 100,100,400,20,
+	    //'black',1,'center');
 	    for( var r = 0; r < keys.length; r++)	    
 		for( var i = 0; i < keys[r].length; i++)
 	    {
@@ -857,109 +870,59 @@ var XURDLE = {};
 
     function drawGrid()
     {
-	var dl = (cw+lw)/6;    // dash length
-	var r = 10; // radius
-	var bkgColor = "rgb(200, 200, 255)";
+	//var r = 10; // radius
+	var bkgColor = "rgb(220, 220, 255)";
 	var gray = "rgb(180,180,180)";
-	var lightgray = "rgb(230,230,230)";
+	var lightgray = "rgb(240,240,240)";
 	var black = "rgb(0,0,0)";
 	var white = "rgb(255,255,255)";
-	
+	var gWidth = 0.9 * cWidth;
+	var gHeight = keyboardGeometry.top /2;	
+	rh = Math.floor( Math.min( gWidth / 6, gHeight / 6) );
+	cw = rh;
+	var lw = 5; // for row and diagonal boxes
+	var lw2 = 2; // for vertical black lines
+	console.log("cw = " + cw);
+	//var left = 50 + Math.floor( 0.1*cWidth / 2 );
+	var left = Math.floor(cWidth / 2 - 2.5*cw);	
+	var top = rh;
+	var unselected = 'rgb(220,220,250)';
 	if (mainCanvas.getContext)
 	{
             const ctx = mainCanvas.getContext("2d");
 	    var dx, dy;
 
-	    ctx.beginPath();  // erase Canvas and do NOT draw border
-	    ctx.fillStyle = "white";
-	    ctx.rect(0,0,width,height);
-	    ctx.fill();
-
 	    ctx.beginPath();
 	    ctx.lineWidth = lw;
 	    ctx.strokeStyle = horizWordColor;
+
 	    //***********************  horizontal boxes *************************
 	    var row = 0;
 	    for( dy = 0; dy < 5*rh; dy += rh)   
 	    {
 		ctx.beginPath();
+		ctx.lineCap = "butt";
+		ctx.strokeStyle = horizWordColor;
 		if (selectedArrow == row)
 		    ctx.fillStyle = lightgray;
 		else
-		    ctx.fillStyle = 'rgb(200,200,230)';
-		myRoundRect(ctx, left, top + dy, 5*cw, rh, 20);
+		    ctx.fillStyle = unselected;
+		//myRoundRect(ctx, left, top + dy, 5*cw, rh, 20);
+		ctx.rect(left, top + dy, 5*cw, rh);		
 		//ctx.roundRect(left, top + dy, 5*cw, rh, 20);
 		ctx.fill();
 		ctx.stroke();
 		row++;
 	    }
 
-	    //***********************  diagonal line #1  *************************
-	    var x = left+r,
-		y = top+lw;
-	    var unselected = 'rgb(200,200,230)';
-	    
-	    //grid[0][0]
-	    drawCell(ctx,diagWordColor,
-		     selectedArrow <= 0 ? lightgray : unselected,
-		     left+0.7*lw,y,cw-lw-3,rh-2*lw,r,
-		     'r','s','s','r');
-	    //grid[1][1]
-	    drawCell(ctx,diagWordColor,
-		     selectedArrow === -1 || selectedArrow === 1 ?
-		     lightgray : unselected,
-		     left+cw+6,y+rh,cw-lw-1,rh-2*lw,r,
-		     's','s','s','s');	
-	    //grid[2][2]
-	    drawCell(ctx,centerColor,
-		     selectedArrow === -1 || selectedArrow === 2
-		     || selectedArrow === 5? lightgray : unselected,
-		     left+2*cw+0.7*lw,y+2*rh,cw-lw-3,rh-2*lw,r,
-		     's','s','s','s');
-	    //grid[3][3]
-	    drawCell(ctx,diagWordColor,
-		     selectedArrow === -1 || selectedArrow === 3 ? lightgray :
-		     unselected,
-		     left+3*cw+0.6*lw,y+3*rh,cw-lw-1,rh-2*lw,r,
-		     's','s','s','s');	
-	    //grid[4][4]
-	    drawCell(ctx,diagWordColor,
-		     selectedArrow === -1 || selectedArrow === 4?
-		     lightgray : unselected,
-		     left+4*cw+0.7*lw,y+4*rh,cw-lw-3,rh-2*lw,r,
-		     's','r','r','s');
-	    //grid[4][0]
-	    drawCell(ctx,diag2WordColor,
-		     selectedArrow >= 4? lightgray : unselected, 
-		     left+0.7*lw,y+4*rh,cw-lw-3,rh-2*lw,r,
-		     'r','s','s','r');
-	    //grid[3][1]
-	    drawCell(ctx,diag2WordColor,
-		     selectedArrow === 3 || selectedArrow === 5?
-		     lightgray : unselected,
-		     left+cw+0.6*lw,y+3*rh,cw-lw-1,rh-2*lw,r,
-		     's','s','s','s');
-	    //grid[1][3]
-	    drawCell(ctx,diag2WordColor,
-		     selectedArrow === 1 || selectedArrow === 5 ?
-		     lightgray : unselected,
-		     left+3*cw+0.6*lw,y+rh,cw-lw-1,rh-2*lw,r,
-		     's','s','s','s');
-	    //grid[0][4]
-	    drawCell(ctx,diag2WordColor,
-		     selectedArrow === 0 || selectedArrow === 5 ?
-		     lightgray : unselected,
-		     left+4*cw+0.7*lw,y,cw-lw-3,rh-2*lw,r,
-		     's','r','r','s');
-
 	    ctx.beginPath();	    // black vertical lines in the grid
-	    ctx.lineWidth = Math.max(2,rh*0.02);
+	    ctx.lineWidth = lw2;
 	    ctx.strokeStyle = "#000000";
+	    ctx.lineCap = "butt";
 	    for(var c = 1; c < 5; c++)  
 	    {
 		for(var r = 0; r < 5; r++)
 		{
-
 		    if ( (r===0 && (c===2 || c===3)) ||
 			 (r===2 && (c===1 || c===4)) ||
 			 (r===4 && (c===2 || c===3)) )		     
@@ -968,11 +931,66 @@ var XURDLE = {};
 			ctx.lineTo(left + c*cw, top+r*rh+rh-lw/2);
 		    }
 		}
-		
-		//ctx.moveTo(left + c*cw, top);
-		//ctx.lineTo(left + c*cw, top+5*rh);
 	    }
 	    ctx.stroke();
+
+	    //***********************  diagonal line #1  *************************
+	    var x = left,
+		y = top;
+	    
+	    //grid[0][0]
+	    drawCell(ctx,diagWordColor,
+		     selectedArrow <= 0 ? lightgray : unselected,
+		     left+lw,y+lw,cw-lw-lw2,rh-2*lw,0,
+		     's','s','s','s');
+	    //grid[1][1]
+	    drawCell(ctx,diagWordColor,
+		     selectedArrow === -1 || selectedArrow === 1 ?
+		     lightgray : unselected,
+		     left+cw+lw2,y+rh+lw,cw-lw,rh-2*lw,0,
+		     's','s','s','s');	
+	    //grid[2][2]
+	    drawCell(ctx,centerColor,
+		     selectedArrow === -1 || selectedArrow === 2
+		     || selectedArrow === 5? lightgray : unselected,
+		     left+2*cw+lw2,y+2*rh+lw,cw-lw,rh-2*lw,0,
+		     's','s','s','s');
+	    //grid[3][3]
+	    drawCell(ctx,diagWordColor,
+		     selectedArrow === -1 || selectedArrow === 3 ? lightgray :
+		     unselected,
+		     left+3*cw+lw2,y+3*rh+lw,cw-lw,rh-2*lw,0,		     
+		     's','s','s','s');	
+	    //grid[4][4]
+	    drawCell(ctx,diagWordColor,
+		     selectedArrow === -1 || selectedArrow === 4?
+		     lightgray : unselected,
+		     left+4*cw+lw2,y+4*rh+lw,cw-lw-lw2,rh-2*lw,0,
+		     's','s','s','s');
+	    //grid[4][0]
+	    drawCell(ctx,diag2WordColor,
+		     selectedArrow >= 4? lightgray : unselected,
+		     left+lw,y+4*rh+lw,cw-lw-lw2,rh-2*lw,0,		     
+		     's','s','s','s');
+	    //grid[3][1]
+	    drawCell(ctx,diag2WordColor,
+		     selectedArrow === 3 || selectedArrow === 5?
+		     lightgray : unselected,
+		     left+cw+lw2,y+3*rh+lw,cw-lw,rh-2*lw,0,		     
+		     's','s','s','s');
+	    //grid[1][3]
+	    drawCell(ctx,diag2WordColor,
+		     selectedArrow === 1 || selectedArrow === 5 ?
+		     lightgray : unselected,
+		     left+3*cw+lw2,y+rh+lw,cw-lw,rh-2*lw,0,
+		     's','s','s','s');
+	    //grid[0][4]
+	    drawCell(ctx,diag2WordColor,
+		     selectedArrow === 0 || selectedArrow === 5 ?
+		     lightgray : unselected,
+		     left+4*cw+lw2,y+lw,cw-lw-lw2,rh-2*lw,0,
+		     's','s','s','s');
+
 
 	    for(var r = 0; r < 5; r++)         // draw arrows
 		drawArrow(ctx,left-0.6*cw-lw,top+(r*rh)+0.245*rh,
