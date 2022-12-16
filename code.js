@@ -126,7 +126,7 @@ var XURDLE = {};
 	var width = Math.floor(mainCanvas.style.width.slice(0,-2));
 	var height = mainCanvas.style.height.slice(0,-2);	
 	console.log(width);
-	ctx.rect(5, 5,cWidth-10,cHeight-10);
+	ctx.rect(0, 0,cWidth,cHeight-5);
 	ctx.fill();
 	ctx.stroke();	
 	ctx.closePath();
@@ -150,7 +150,7 @@ var XURDLE = {};
 	console.log("top = " + kb["top"] + " h = " + kb["h"]);	
 	const row = Math.floor((y - kb["top"]) / kb["h"]);
 	const col = Math.floor((x - kb["left"]) / (kb["w"]+kb["sp"]));
-	console.log("row = " + row + " col = " + col);
+	//console.log("row = " + row + " col = " + col);
 	if (row >= 0 && row <= 2 && col >= 0 && col <= 9)
 	    return keys[row][col];
     }
@@ -188,7 +188,7 @@ var XURDLE = {};
     }
     
     function init()
-    {
+    {	
 	//console.log("avail:  " + width + " by " + height);
 	//console.log("window: " + wWidth + " by " + wHeight);
 	document.getElementById("myHeader").height = 100;
@@ -322,16 +322,15 @@ var XURDLE = {};
 	    left = 10;
 	    w = (width - 2*left)/ 10.9;
 	    sp = 0.1*w;
-	    rowSp = 0.3*w;	    
+	    rowSp = 0.2*w;	    
 	    h = 1.1*w;
-	    top = cHeight - 3*h - 2*sp;
-	    
+	    top = cHeight - 10 - 3*h - 2*rowSp;	    
 	    keyboardGeometry =
 		{ "top": top, "left": left, "w": w, "h": h, "sp":sp };
 	}
-	if (canvas.getContext)
+	if (mainCanvas.getContext)
 	{
-	    const ctx = canvas.getContext("2d");
+	    const ctx = mainCanvas.getContext("2d");
 	    drawLetter(ctx,portrait+"", 100,100,400,20,
 				       'black',1,'center');
 	    for( var r = 0; r < keys.length; r++)	    
