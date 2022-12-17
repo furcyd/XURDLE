@@ -135,11 +135,13 @@ var XURDLE = {};
 
 	keyboardGeometry = drawKeyboard();
 	drawGrid();
-	
+	drawScore();
+
 	/*
 	drawGuesses();
-	//drawHeaderAndFooter();
 	*/
+	drawHeaderAndFooter();
+	
 
 
 	
@@ -150,9 +152,9 @@ var XURDLE = {};
 	const rect = canvas.getBoundingClientRect()
 	const x = event.clientX - rect.left
 	const y = event.clientY - rect.top
-	console.log("x = " + x + " y = " + y);
+	//console.log("x = " + x + " y = " + y);
 	const kb = keyboardGeometry;
-	console.log("top = " + kb["top"] + " h = " + kb["h"]);	
+	//console.log("top = " + kb["top"] + " h = " + kb["h"]);	
 	const row = Math.floor((y - kb["top"]) / kb["h"]);
 	const col = Math.floor((x - kb["left"]) / (kb["w"]+kb["sp"]));
 	//console.log("row = " + row + " col = " + col);
@@ -196,8 +198,8 @@ var XURDLE = {};
     {	
 	//console.log("avail:  " + width + " by " + height);
 	//console.log("window: " + wWidth + " by " + wHeight);
-	document.getElementById("myHeader").height = 100;
-	console.log ("hello " + document.getElementById("myHeader"));
+	//document.getElementById("myHeader").height = 100;
+	//console.log ("hello " + document.getElementById("myHeader"));
 	document.getElementById("myHeader").style.width = width + "px";
 
 	//document.getElementById("myHeader").style.height = 30 + "px";
@@ -235,7 +237,7 @@ var XURDLE = {};
 
 	width = mainCanvas.style.width.slice(0,-2);
 	height = mainCanvas.style.height.slice(0,-2);
-	console.log(width + " by " + height);
+	//console.log(width + " by " + height);
 	currentTab = mainCanvas;
 
 	// is local storage empty?
@@ -720,6 +722,35 @@ var XURDLE = {};
 	mode = "nextGame?";
     }// gameOver
 
+    function drawScore()
+    {
+	var left, top, width;
+	if (portrait)
+	{
+	    left = 2 + Math.floor(cWidth / 2 - 2.5*cw);	
+	    top = 0;
+	    width = 5*rh-2;
+	    height = 0.9*rh;
+	}
+	if (mainCanvas.getContext)
+	{
+	    const ctx = mainCanvas.getContext("2d");
+
+	    ctx.beginPath(); // erase old one
+	    ctx.fillStyle = bkgColor;
+	    //ctx.fillStyle = 'red';
+	    ctx.rect(left,top, width, 0.9*rh);
+	    ctx.fill();
+
+	    ctx.beginPath();
+	    ctx.textAlign = 'center';
+	    ctx.fillStyle = "black";
+	    ctx.textBaseline = 'bottom';
+	    ctx.font =  0.5*rh + 'px Arial';
+	    var text = "Score: " + totalGuesses;
+	    ctx.fillText(text,left+width/2,top+0.7*rh, width);
+	}
+    }// drawScore
     
     function drawHeaderAndFooter()    
     {
@@ -754,7 +785,8 @@ var XURDLE = {};
 	    if (mode === "guess")
 		header = "Type in your next guess";
 	    ctx.fillText(header,left+30 + width/2,topHeader+0.75*height);
-	    
+
+	    /*
 	    // footer
 	    var footer = "Total guesses: " + totalGuesses;
 	    ctx.beginPath();
@@ -768,6 +800,7 @@ var XURDLE = {};
 	    ctx.fillStyle = "black";
 	    ctx.fillText(footer,left+30 + width/2,topFooter+0.75*height);
 	    ctx.stroke();
+	    */
 	}
     }// drawHeaderAndFooter
 
@@ -882,7 +915,6 @@ var XURDLE = {};
 	cw = rh;
 	var lw = 5; // for row and diagonal boxes
 	var lw2 = 2; // for vertical black lines
-	console.log("cw = " + cw);
 	//var left = 50 + Math.floor( 0.1*cWidth / 2 );
 	var left = Math.floor(cWidth / 2 - 2.5*cw);	
 	var top = rh;
@@ -995,10 +1027,10 @@ var XURDLE = {};
 	    for(var r = 0; r < 5; r++)         // draw arrows
 		drawArrow(ctx,left-0.6*cw-lw,top+(r*rh)+0.245*rh,
 			  0.49*rh, horizWordColor, selectedArrow === r);
-	    drawDiagonalArrow(ctx,left-0.7*cw,top-0.49*rh,0.49*rh,diagWordColor,
+	    drawDiagonalArrow(ctx,left-0.6*cw,top-0.49*rh,0.4*rh,diagWordColor,
 			      selectedArrow === -1);
 
-	    drawDiagonalArrow2(ctx,left-0.7*cw, top+5*rh,0.49*rh,diag2WordColor,
+	    drawDiagonalArrow2(ctx,left-0.6*cw, top+5*rh,0.4*rh,diag2WordColor,
 			       selectedArrow === 5);
 
 	    for( var r = 0; r < 5; r++)         // draw letters
@@ -1120,12 +1152,12 @@ var XURDLE = {};
 
     function drawDiagonalArrow(ctx,x,y,h,color,frame)
     {
-	var u = h/7; // grid size of this arrow's box whose size if 10u by 7u
+	var u = Math.floor(h/7); // grid size of this arrow's box whose size if 10u by 7u
 	ctx.lineWidth = 1;
 	// first, erase the existing arrow
 	ctx.beginPath();
 	ctx.fillStyle = 'white';    
-	ctx.rect(x,y,10*u,7*u);    
+	ctx.rect(x-1,y-1,10*u+2,7*u+2);    
 	ctx.fill();
 	ctx.closePath();
 
