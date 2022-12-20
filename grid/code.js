@@ -195,9 +195,18 @@ var XURDLE = {};
 	}
 	handleKeyDown( e );
     }
-    
+
+    const appHeight = () => {
+	const doc = document.documentElement
+	doc.style.setProperty('--app-height', `${window.innerHeight}px`)
+    }
     function init()
-    {	
+    {
+
+	window.addEventListener('resize', appHeight);
+	appHeight()
+
+	.*
 	//console.log("avail:  " + width + " by " + height);
 	//console.log("window: " + wWidth + " by " + wHeight);
 	//document.getElementById("myHeader").height = 100;
@@ -260,6 +269,7 @@ var XURDLE = {};
 	}
 	initDataStructures();
 	redraw();
+	*/
     }// init
 
     function initDataStructures()

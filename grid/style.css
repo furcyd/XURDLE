@@ -1,4 +1,18 @@
-html, body, div {
+:root {
+   --app-height: 100%;
+}
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    height: var(--app-height);
+}
+
+div {
   margin: 0px;
   padding: 0px;
 }
