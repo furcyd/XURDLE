@@ -91,14 +91,19 @@ var XURDLE = {};
 	mode = "grid";
 	window.addEventListener('resize', appHeight);
 	appHeight();
+	document.addEventListener('keydown', handleKeyDown);
 	//console.log(document.documentElement.style.getPropertyValue('--app-height'));
 
 	//console.log(window.innerHeight);
 
 	
 	var c = document.getElementById("container");
-	c.style.gridTemplateRows = "30px 1fr 1fr minmax(150px,200px)";
-	c.style.gridTemplateColumns = "100px auto 100px";
+	c.style.gridTemplateRows = "30px 20px 1fr 1fr minmax(150px,200px)";
+	//c.style.gridTemplateColumns = "100px auto 100px";
+	c.style.gridTemplateColumns = "minmax(100px,fit-content) auto minmax(100px,fit-content)";
+
+	
+	
 	var grid = document.getElementById("grid");
 	grid.style.display = "grid";
 	grid.style.gridTemplateRows = "repeat(5,1fr)";
@@ -279,43 +284,6 @@ var XURDLE = {};
 	}
     }
 
-    function drawUpSign(ctx,x,y,w,h,up)
-    {
-	ctx.beginPath();
-	ctx.lineWith = 1;
-	ctx.fillStyle = 'black';
-	ctx.moveTo(x,y);
-	ctx.lineTo(x+w/6,y+(up? h : -h));
-	ctx.lineTo(x-w/6,y+(up? h : -h));	
-	ctx.closePath();	
-	ctx.fill();
-    }
-
-    function drawDeleteSign(ctx,x,y,w,h)
-    {
-	ctx.beginPath();
-	ctx.strokeStyle = 'black';
-	ctx.lineWidth = 8;
-	ctx.moveTo(x,y);
-	ctx.lineTo(x+w/3,y);
-	ctx.lineTo(x+w/3,y+w/3);
-	ctx.lineTo(x,y+w/3);
-	ctx.lineTo(x-w/5,y+w/6);			
-	ctx.closePath();
-	ctx.stroke();	
-	ctx.beginPath();
-	ctx.strokeStyle = 'black';
-	ctx.lineWidth = 10;
-	x -= w/30;
-	ctx.moveTo(x+w/15,y+w/15);
-	ctx.lineTo(x+4*w/15,y+4*w/15);
-	ctx.moveTo(x+4*w/15,y+w/15);
-	ctx.lineTo(x+w/15,y+4*w/15);		
-	ctx.stroke();
-
-
-    }
-    
     function drawStats()
     {
 	var canvas = statsCanvas;
@@ -413,7 +381,10 @@ var XURDLE = {};
     {
 	var code = Number(event.keyCode);	
 	var key = event.key;
-
+	if (key === "ArrowDown")
+	    key = "downBtn";
+	if (key === "ArrowUp")
+	    key = "upBtn";	
 	console.log("here " + code + " " + key);
 /*
 	if (currentTab !== mainCanvas)
@@ -651,114 +622,6 @@ var XURDLE = {};
 	}
     }// drawScore
     
-    function drawHeaderAndFooter()    
-    {
-	if (mainCanvas.getContext)
-	{
-	    var width = 5*cw + 5*(gw+sp)- 50;
-	    var height = rh-15;
-	    var topHeader =  top - rh;
-	    var topFooter = top + 5*rh + 15;
-            const ctx = mainCanvas.getContext("2d");
-
-
-	    ctx.beginPath(); // erase header and footer
-	    ctx.fillStyle = bkgColor;
-	    ctx.rect(left + 30,topHeader, width, height);
-	    ctx.rect(left + 30, top + 5*rh + 20, width, height);
-	    ctx.fill();
-
-	    // header
-	    ctx.beginPath();
-	    ctx.lineWidth = 2;
-	    ctx.strokeStyle = "black";
-	    // ctx.fillStyle = "LightCyan";
-	    ctx.fillStyle = "rgb(215, 246, 250)";
-	    myRoundRect(ctx,left + 30,topHeader, width, height,	10, true);
-	    ctx.beginPath();
-	    ctx.textAlign = 'center';
-	    ctx.fillStyle = "black";
-	    ctx.textBaseline = 'bottom';
-	    ctx.font =  (0.5*height) + 'px Arial';
-	    var header = "Pick a row or diagonal to guess next";
-	    if (mode === "guess")
-		header = "Type in your next guess";
-	    ctx.fillText(header,left+30 + width/2,topHeader+0.75*height);
-
-	    /*
-	    // footer
-	    var footer = "Total guesses: " + totalGuesses;
-	    ctx.beginPath();
-	    ctx.lineWidth = 2;
-	    ctx.strokeStyle = "black";
-	    //ctx.fillStyle = "PeachPuff";
-	    ctx.fillStyle = "rgb(215, 246, 250)";
-	    myRoundRect(ctx,left + 30, topFooter, width, height, 10,true);
-	    ctx.beginPath();
-	    ctx.strokeStyle = diagWordColor;
-	    ctx.fillStyle = "black";
-	    ctx.fillText(footer,left+30 + width/2,topFooter+0.75*height);
-	    ctx.stroke();
-	    */
-	}
-    }// drawHeaderAndFooter
-
-    function drawGuesses()
-    {
-	var x, y;
-	if (! portrait)
-	{
-	    x = left+5*cw+2*sp;
-	    y = top;
-	} else
-	{
-	    x = 0.05 * width + rh;
-	    y = top + 6 * rh;
-	}
-	if (mainCanvas.getContext)
-	{
-            const ctx = mainCanvas.getContext("2d");
-	    for( var r = 0; r < 6; r++)
-	    {
-		for(var c = 0; c < 5; c++)	   
-		{
-		    ctx.beginPath();
-		    ctx.strokeStyle = 'black';
-		    if (gStyles[r][c] === "g")
-		    {
-			ctx.fillStyle = '#6aaa64'; // green
-			ctx.fillRect(x + c*(gw+sp),y+r*(gw+sp),gw,gw);
-		    }
-		    else if (gStyles[r][c] === "y")
-		    {
-			ctx.fillStyle = '#c9b458';  // yellow
-			ctx.fillRect(x + c*(gw+sp),y+r*(gw+sp),gw,gw);
-		    }
-		    if (guesses[r][c] !== "")
-		    {
-			drawLetter(ctx,guesses[r][c],
-				   x + c*(gw+sp) + gw/2, y+r*(gw+sp)+gw-0.2*gw,
-				   gw,0.8*gw,
-				   gStyles[r][c] === '' ? 'black' : 'white',true);
-		    }
-		    ctx.beginPath();
-		    if (mode === "guess" && r <= guessNumber)
-		    {
-			ctx.lineWidth = 1;
-			ctx.strokeStyle = 'black';
-		    }
-		    else 
-		    {
-			ctx.lineWidth = 1;
-			ctx.strokeStyle = 'lightgray';		    
-		    }
-		    
-		    ctx.strokeRect(x + c*(gw+sp),y+r*(gw+sp),gw,gw);
-		}
-	    }
-	}
-    }// drawGuesses
-
     function getWordInGrid(arrow)  // arrow is the selected one in {-1,0,...,5}
     {
 	switch (arrow)
