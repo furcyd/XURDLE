@@ -22,7 +22,7 @@ div {
     width: 100vw;
     display: grid;
     grid-template-columns: 10em auto 10em;
-    grid-template-rows: 30px auto auto 100px;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
     //justify-content: center;
     grid-template-areas: 
         "header header header"
