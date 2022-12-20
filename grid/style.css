@@ -17,22 +17,17 @@ div {
   padding: 0px;
 }
 
-.container {
+#container {
     height: 100vh;
     width: 100vw;
     display: grid;
-    grid-template-columns: 10em auto 10em;
-    grid-template-rows: 1fr 1fr 1fr 1fr;
-    //justify-content: center;
-    grid-template-areas: 
-        "header header header"
-	"grid-left grid grid-right"
-	"guess-left guess ."
-	"keyboard keyboard keyboard"
-    ;
-  gap: 5px;
-  background: white;
+    //grid-template-columns: 1fr 1fr 1fr;
+    //grid-template-rows: 1fr 294px 1fr 1fr;
+    justify-content: center;
+    gap: 5px;
+    background: white;
 }
+
 
 div {
   //padding: 10px;
@@ -41,13 +36,78 @@ div {
 }
 
 .header {
-  grid-area: header;
+    grid-column: 1 / 4;
+    grid-row: 1 / 2;
 }
 
-.keyboard {
-  grid-area: keyboard;
+.grid-left {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
 }
 
-.notHere {
-  grid-area: notHere;
+#grid {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    
+    display: grid;
+    grid-template-rows: repeat(5,1fr);
+}
+
+.grid-right {
+    grid-column: 3 / 4;
+    grid-row: 2 / 3;
+
+}
+
+
+.guess-left {
+    grid-column: 1 / 2;
+    grid-row: 3 / 4;
+}
+
+.guess {
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+}
+
+
+#keyboard {
+    //height: 400px;
+    //width: 100vw;
+
+    display: grid;
+    grid-template-columns: repeat(10,1fr);
+    grid-template-rows: 50px 50px 50px;
+    justify-content: center;
+    column-gap: 4px;
+    row-gap: 10px;    
+    background: white;
+    grid-column: 1 / 4;
+    grid-row: 4 / 5;
+    
+}
+
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    border: blue 5px solid;
+    border-bottom: none;
+
+    width: auto;
+}
+
+#row4 {
+    border-bottom: blue 5px solid;
+}
+
+.cell {
+    box-sizing: border;
+    display: inline-block;
+    border: black 1px solid;
+}
+
+#grid_0_0, #grid_1_1,#grid_2_2,#grid_3_3,#grid_4_4,#grid_4_0,#grid_3_1,
+#grid_1_3,#grid_0_4 {
+    border: 5px red solid;
 }

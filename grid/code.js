@@ -28,8 +28,8 @@ var XURDLE = {};
 
     var keyboardGeometry;
     var keys = [ [ "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" ],
-		 [ "A", "S", "D", "F", "G", "H", "J", "K", "L", "u"],
-		 [ "ENTER", "Z", "X", "C", "V", "B", "N", "M", "b","d"] ];
+		 [ "A", "S", "D", "F", "G", "H", "J", "K", "L",],
+		 [ "ENTER", "Z", "X", "C", "V", "B", "N", "M", "b"] ];
 
     var wWidth = window.innerWidth     // browser window's width
 	|| document.documentElement.clientWidth
@@ -198,16 +198,58 @@ var XURDLE = {};
 
     const appHeight = () => {
 	const doc = document.documentElement;
-	doc.style.setProperty('--app-height', (window.innerHeight-20) + `px`);
+	doc.style.setProperty('--app-height', (window.innerHeight) + `px`);
     }
     function init()
     {
+
 	//console.log(document.documentElement.style.getProperty('--app-height'));
 	window.addEventListener('resize', appHeight);
 	appHeight();
 	console.log(document.documentElement.style.getPropertyValue('--app-height'));
 
 	console.log(window.innerHeight);
+
+	
+	var c = document.getElementById("container");
+	c.style.gridTemplateRows = "30px 1fr 1fr 300px";
+	c.style.gridTemplateColumns = "100px 200px 100px";
+	var grid = document.getElementById("grid");
+	grid.style.display = "grid";
+	grid.style.gridTemplateRows = "repeat(5,1fr)";
+
+	
+	var r = document.getElementById("row0");
+	r.style.display = "grid";
+	r.style.gridTemplateColumns = "repeat(5,1fr)";
+
+	r = document.getElementById("row4");
+	console.log( r.style.height);
+
+	for( var r = 0; r < 3; r++)
+	    for( var c = 0; c < keys[r].length; c++)
+	{
+	    var kb = document.getElementById("keyboard");
+	    var bt = document.createElement("button");
+	    //bt.style.setProperty("width", "50px");
+	    bt.innerHTML = keys[r][c];
+	    if ( keys[r][c] == "ENTER")
+	    {
+		bt.id = "enterKey";
+		bt.style.setProperty("grid-column","1 / 3");		
+	    }
+	    if ( keys[r][c] == "b")
+	    {
+		bt.id = "baskspaceKey";
+		bt.style.setProperty("grid-column","10 / 11");
+		bt.style.setProperty("grid-row","2 / 4");
+		bt.innerHTML = "D<br />E<br />L<br />E<br />T<br />E";
+	    }
+	    kb.appendChild(bt);
+	}
+	//console.log( "width = " + c.style.width );
+
+	//r.style.height = "75px"; // (0 + Number(r.style.height.slice(0,-2))) + "px";
 	/*
 	//console.log("avail:  " + width + " by " + height);
 	//console.log("window: " + wWidth + " by " + wHeight);
