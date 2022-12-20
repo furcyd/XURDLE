@@ -204,6 +204,7 @@ var XURDLE = {};
     {
 
 	window.addEventListener('resize', appHeight);
+	window.addEventListener('load', appHeight);	
 	appHeight();
 
 	/*
