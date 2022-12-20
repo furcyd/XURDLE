@@ -3,6 +3,8 @@ var XURDLE = {};
 (function() {
     "use strict";
 
+    var container, helpDiv, statsDiv, currentTab;
+    var gameWidth, gameLeft;
     var problemNumber;
     var mode;
     
@@ -85,6 +87,41 @@ var XURDLE = {};
 	const doc = document.documentElement;
 	doc.style.setProperty('--app-height', (window.innerHeight) + `px`);
     }
+
+    function styleContainer()
+    {
+	container.style.display =  "grid";
+	container.style.gridTemplateRows =
+	    "35px 10px 1fr 1fr minmax(150px,200px)";
+	//c.style.gridTemplateColumns = "100px auto 100px";
+	container.style.gridTemplateColumns =
+	    "minmax(100px,fit-content) auto minmax(100px,fit-content)";
+	
+	
+	var grid = document.getElementById("grid");
+	grid.style.display = "grid";
+	grid.style.gridTemplateRows = "repeat(5,1fr)";
+	
+	var row = document.getElementById("row0");
+	row.style.display = "grid";
+	row.style.gridTemplateColumns = "repeat(5,1fr)";
+	    
+	//row = document.getElementById("row4");
+
+	gameWidth = getComputedStyle(
+	    document.getElementById("keyboard")).width.slice(0,-2);
+	//gameLeft = getComputedStyle(
+	  //  document.getElementById("keyboard")).style.left.slice(0,-2);	
+	console.log( "gameLeft = " + document.getElementById("keyboard").style.left);
+    }
+
+    function styleHelp()
+    {
+	helpDiv.style.width = gameWidth + "px";
+	helpDiv.style.margin = "auto";	
+	//	helpDiv.style.width = window.innerWidth + "px";
+	//helpDiv.style.width = "100vw";
+    }
     
     function init()
     {
@@ -92,58 +129,51 @@ var XURDLE = {};
 	window.addEventListener('resize', appHeight);
 	appHeight();
 	document.addEventListener('keydown', handleKeyDown);
-	//console.log(document.documentElement.style.getPropertyValue('--app-height'));
 
-	//console.log(window.innerHeight);
-
-	
-	var c = document.getElementById("container");
-	c.style.gridTemplateRows = "30px 20px 1fr 1fr minmax(150px,200px)";
-	//c.style.gridTemplateColumns = "100px auto 100px";
-	c.style.gridTemplateColumns = "minmax(100px,fit-content) auto minmax(100px,fit-content)";
-
-	
-	
-	var grid = document.getElementById("grid");
-	grid.style.display = "grid";
-	grid.style.gridTemplateRows = "repeat(5,1fr)";
-	
-	var r = document.getElementById("row0");
-	r.style.display = "grid";
-	r.style.gridTemplateColumns = "repeat(5,1fr)";
-
-	r = document.getElementById("row4");
-
-	var bt = document.getElementById("upBtn");
-	bt.addEventListener('click', handleClick);
-	bt = document.getElementById("downBtn");
-	bt.addEventListener('click', handleClick);
-
-	
-	// add keyboard
-	for( r = 0; r < 3; r++)
-	    for( c = 0; c < keys[r].length; c++)
+	if (! container)
 	{
-	    var kb = document.getElementById("keyboard");
-	    var bt = document.createElement("button");
-	    //bt.style.setProperty("width", "50px");
-	    bt.id =  keys[r][c];
+	    container = document.getElementById("container");
+	    helpDiv = document.getElementById("helpDiv");
+	    statsDiv = document.getElementById("statsDiv");
+	    	var bt = document.getElementById("upBtn");
+
 	    bt.addEventListener('click', handleClick);
-	    bt.innerHTML = keys[r][c];
-	    if ( keys[r][c] == "ENTER")
+	    bt = document.getElementById("downBtn");
+	    bt.addEventListener('click', handleClick);
+
+	    var r, c;
+	    // add keyboard
+	    for( r = 0; r < 3; r++)
+		for( c = 0; c < keys[r].length; c++)
 	    {
-		bt.id = "enterKey";
-		bt.style.setProperty("grid-column","1 / 3");		
+		var kb = document.getElementById("keyboard");
+		var bt = document.createElement("button");
+		//bt.style.setProperty("width", "50px");
+		bt.id =  keys[r][c];
+		bt.addEventListener('click', handleClick);
+		bt.innerHTML = keys[r][c];
+		if ( keys[r][c] == "ENTER")
+		{
+		    bt.id = "enterKey";
+		    bt.style.setProperty("grid-column","1 / 3");		
+		}
+		if ( keys[r][c] == "b")
+		{
+		    bt.id = "baskspaceKey";
+		    bt.style.setProperty("grid-column","10 / 11");
+		    bt.style.setProperty("grid-row","2 / 4");
+		    bt.innerHTML = "D<br />E<br />L<br />E<br />T<br />E";
+		}
+		kb.appendChild(bt);
 	    }
-	    if ( keys[r][c] == "b")
-	    {
-		bt.id = "baskspaceKey";
-		bt.style.setProperty("grid-column","10 / 11");
-		bt.style.setProperty("grid-row","2 / 4");
-		bt.innerHTML = "D<br />E<br />L<br />E<br />T<br />E";
-	    }
-	    kb.appendChild(bt);
+	    
 	}
+
+	styleContainer();
+	styleHelp();	
+
+
+	console.log( "game width = " + gameWidth );
 	initDataStructures();
 	drawGrid();
 /*
@@ -170,7 +200,6 @@ var XURDLE = {};
 
     function initDataStructures()
     {
-	mode = "grid";
 	selectedRow = -1;
 	guessNumber = 0;
 	charIndex = 0;
@@ -199,17 +228,19 @@ var XURDLE = {};
 
     function showHelp()
     {
-	mainCanvas.style.display = "none";
-	statsDiv.style.display = "none";
-	help.style.display = "block";
-	currentTab = help;
+	container.style.display = "none";
+	//statsDiv.style.display = "none";
+	helpDiv.style.display = "block";
+	currentTab = helpDiv;
     }
 
     function hideHelp()
     {
-	mainCanvas.style.display = "block";
-	help.style.display = "none";
-	currentTab = mainCanvas;
+	helpDiv.style.display = "none";
+	container.style.display = "block";
+	styleContainer();
+
+	currentTab = container;
     }
 
     function showStats()
@@ -227,61 +258,6 @@ var XURDLE = {};
 	statsDiv.style.display = "none";
 	help.style.display = "none";	
 	currentTab = mainCanvas;
-    }
-
-    function drawKeyboard()
-    {
-	if (mainCanvas.getContext)
-	{
-	    const ctx = mainCanvas.getContext("2d");
-	    
-	    ctx.beginPath();  // erase Canvas and do NOT draw border
-	    ctx.fillStyle = "white";
-	    ctx.rect(0,0,width,height);
-	    ctx.fill();
-
-	    //var cw = canvas.style.width.slice(0,-2);  // canvas width
-	    var sp, rowSp, left, top, w, h, x, y;
-	    //if (portrait)
-	    {
-		left = 10;
-		w = (width - 2*left)/ 10.9;
-		sp = 0.1*w;
-		rowSp = 0.2*w;	    
-		h = 1.1*w;
-		top = cHeight - 10 - 3*h - 2*rowSp;
-		keyboardGeometry =
-		    { "top": top, "left": left, "w": w, "h": h, "sp":sp };
-	    }
-
-	    //drawLetter(ctx,portrait+"", 100,100,400,20,
-	    //'black',1,'center');
-	    for( var r = 0; r < keys.length; r++)	    
-		for( var i = 0; i < keys[r].length; i++)
-	    {
-		ctx.beginPath();
-		var x = left + i * (w+sp);
-		var y = top + r*(h+rowSp);
-		ctx.fillStyle = "lightGray";
-		ctx.roundRect(x, y, w, h,10);
-		ctx.fill();
-		switch (keys[r][i])
-		{
-		    case "u":  // up key
-		    drawUpSign(ctx,x + w/2, y+0.35*h, w, h/3,true);
-		    break;
-		    case "d":  // down key
-		    drawUpSign(ctx,x + w/2, y+0.65*h, w, h/3,false);
-		    break;
-		    case "b":  // backspace/delete
-		    drawDeleteSign(ctx,x + w/2.3, y+0.35*h, w, h/3);
-		    break;	    		    
-		    default:   // letter keys
-		    drawLetter(ctx,keys[r][i], x + w/2, y+0.65*h, w, h/3,
-			       'black',1,'center');
-		}
-	    }
-	}
     }
 
     function drawStats()

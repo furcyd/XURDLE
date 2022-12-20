@@ -23,13 +23,13 @@ div {
     display: grid;
     justify-content: center;
     gap: 5px;
-    background: lightgray;
 }
 
 #help {
     grid-column: 1 / 2;
     grid-row: 1 / 2;
     justify-self: start;
+    margin-top: 5px;
 }
 
 #title {
@@ -41,6 +41,7 @@ div {
     text-transform: uppercase;
     justify-self: center;
     pointer-events: none;
+    margin-top: 5px;
 }
 
 #stats {
@@ -48,7 +49,7 @@ div {
     grid-row: 1 / 2;
     text-align: right;
     justify-self: end;
-    background: lightgray;
+    margin-top: 5px;
 }
 
 #line {
@@ -97,7 +98,7 @@ div {
     grid-template-rows: 50px 50px 50px;
     column-gap: 4px;
     row-gap: 10px;    
-    background: blue;
+    //background: blue;
     grid-column: 1 / 4;
     grid-row: 5 / 6;
     aspect-ratio: 2/1;
@@ -134,4 +135,84 @@ button {
     border-radius: 5px;
     border: none;
     background: lightgray;
+    cursor: pointer;
 }
+
+#helpButton {
+    cursor: help;
+}
+
+#upBtn {
+    cursor: n-resize;
+}
+
+#downBtn {
+    cursor: s-resize;
+}
+
+#helpDiv {
+    display: none;
+}
+
+
+#help {
+    font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+}
+
+#help p {
+    margin-bottom: 10px;
+}
+#help button {
+    border: 0px;
+    padding: 0px;
+    background: lightgray;
+}
+
+#help .center, #stats .center {
+    text-align: center;
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+#help .gameName {
+    letter-spacing: 0.05rem;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+#help .feedback {    
+    color: white;
+    font-weight: bold;
+}
+
+#help .green {
+    background-color: #6aaa64;
+}
+
+#help .yellow {
+    background-color: #c9b458;
+}
+
+#help ul {
+    margin-top: -10px;
+}
+
+#help code, #help .bold {
+    font-weight: bold;    
+}
+
+#help .boxed {    
+    border: black 1px solid;
+}
+
+#help .centered {
+    text-align: center;
+    padding: 5px 0px;
+}
+
+#help .whiteText {
+    color: white;
+}
+
