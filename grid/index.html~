@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>XURDLE game</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="./code.js"></script>
+  </head>
+  <body onload="XURDLE.init();">
+    <div id="container">
+      <header id="myHeader">
+        <div class="menu">
+          <button id="helpButton" class="icon" onclick="XURDLE.showHelp()"
+		  aria-label="help" tabindex="-1">
+            <game-icon icon="help">
+	      <svg xmlns="http://www.w3.org/2000/svg" height="24"
+		   viewBox="0 0 24 24" width="24">
+		<path fill="var(--color-tone-3)" d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
+	      </svg>
+	    </game-icon>
+          </button>
+        </div>
+        <div id="titleDiv">
+          XURDLE
+        </div>
+        <div class="menu">
+          <button id="statistics-button" class="icon" aria-label="statistics"
+		  onclick="XURDLE.showStats();" tabindex="-1">
+            <game-icon icon="statistics">
+	      <svg xmlns="http://www.w3.org/2000/svg"
+		   height="24" viewBox="0 0 24 24" width="24">
+		<path fill="var(--color-tone-3)"
+		      d="M16,11V3H8v6H2v12h20V11H16z 
+			 M10,5h4v14h-4V5z M4,11h4v8H4V11z 
+			 M20,19h-4v-6h4V19z"></path>
+	      </svg>
+	    </game-icon>
+          </button>
+        </div>
+      </header>
+      <div id="help">
+	<button id="closeHelp" style="float: right"
+		onClick="XURDLE.hideHelp()">
+	  <game-icon icon="help">
+	    <svg xmlns="http://www.w3.org/2000/svg" height="24"
+		 viewBox="0 0 24 24" width="24">
+	      <path fill="black" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 
+				    10.59 12 5 17.59 6.41 19 12 13.41 17.59 
+				    19 19 17.59 13.41 12z">
+	      </path>
+	    </svg>
+	  </game-icon>
+	</button>
+	<p class="center">HOW TO PLAY</p>
+	
+	<p>In <span class="gameName">XURDLE</span>, you must guess 7
+	  words in a 5x5 grid. Each word is
+	  a <span class="gameName">WORDLE</span> solution and reads from
+	  left to right, 5 of them horizontally and 2 of them
+	  diagonally, the latter forming "<span class="bold">the X</span>"
+	  within the grid.<p>
+	  
+	<p> The game is played by alternating between CHOOSING steps,
+	  played in the grid on the left, and  GUESSING steps (played on the
+	  right).</p>
+	
+	<p><span class="bold">CHOOSING step</span></p>
+	
+	<p>First, use the <code>UP</code> / <code>DOWN</code> arrow keys
+	  to choose a row or diagonal in the grid. This is the word you
+	  will guess next. Hitting a letter key automatically switches to
+	  the GUESSING step.</p>
+	
+	<p><span class="bold">GUESSING step</span></p>
+	
+	<p> The same mechanics as
+	  in <span class="gameName">WORDLE</span>  are used for each GUESSING
+	  step:
+	  <ul>
+	    <li>Use the <code>delete</code> / <code>backspace</code>
+	      keys to enter letters.</li>
+	    <li>Use the <code>enter</code> / <code>return</code> key
+	      to finalize a guess.</li>
+	    <li>Get the usual <span class="green feedback boxed">green</span>
+	      / <span class="yellow feedback boxed">yellow</span> feedback for
+	      letters at the correct / incorrect position in the
+	      word.</li>
+	  </ul>
+	</p>
+	
+	<p><span class="bold">Scoring</span></p>
+	
+	<p>For each word, a maximum of 6 guesses are allowed. If you run
+	  out of guesses for a word, it is added to the grid automatically
+	  but with a penalty of one additional guess, for a maximum score of 7
+	  per word.</p>
+	
+	<p>The final score, to be minimized, is the total number of
+	  guesses to fill up the grid. Since CHOOSING steps for diagonals
+	  are optional, possible scores for
+	  a <span class="gameName">XURDLE</span> game range from 5 to
+	  49.</p>
+	
+	<p><span class="bold">Hint</span></p>
+	
+	<p>Each grid contains at least one occurrence of the letters
+	  in <span class="gameName">XURDLE</span>, all of which always appear
+	  on <span class="bold">the X</span>, except for the letter X itself.
+	</p>
+	
+	<p class="boxed centered green whiteText bold">You can play as
+	  many <span class="gameName">XURDLE</span> games as you wish
+	  each day.</p>
+      </div>
+      <div id="stats">
+	<button id="closeStats" style="float: right"
+		onClick="XURDLE.hideStats()">
+	  <game-icon icon="stats">
+	    <svg xmlns="http://www.w3.org/2000/svg" height="24"
+		 viewBox="0 0 24 24" width="24">
+	      <path fill="black" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 
+				    10.59 12 5 17.59 6.41 19 12 13.41 17.59 
+				    19 19 17.59 13.41 12z">
+	      </path>
+	    </svg>
+	  </game-icon>
+	</button>
+	<p class="center">STATISTICS</p>
+	
+      </div>
+      <div id="canvasDiv"></div>
+      <div id="counter"></div>
+    </div>
+  </body>
+</html>

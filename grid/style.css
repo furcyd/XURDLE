@@ -1,0 +1,39 @@
+html, body, div {
+  margin: 0px;
+  padding: 0px;
+}
+
+.container {
+    height: 100vh;
+    width: 100vw;    
+  display: grid;
+  grid-template-columns: 10em minmax(20em,100%) 10em;
+  grid-template-rows: 30px auto auto 50px;
+  justify-content: center;
+  grid-template-areas: 
+    "header header header"
+    "grid-left grid grid-right"
+    "guess-left guess guess-right"
+    "keyboard keyboard keyboard"
+    ;
+  gap: 5px;
+  background: white;
+}
+
+div {
+  //padding: 10px;
+  background: #ccc;
+  //border: 1px black solid;
+}
+
+.header {
+  grid-area: header;
+}
+
+.keyboard {
+  grid-area: keyboard;
+}
+
+.notHere {
+  grid-area: notHere;
+}
