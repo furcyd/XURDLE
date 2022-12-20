@@ -19,21 +19,13 @@ div {
 
 #container {
     height: 100vh;
-    width: 100vw;
+    //width: 100vw;
     display: grid;
-    //grid-template-columns: 1fr 1fr 1fr;
-    //grid-template-rows: 1fr 294px 1fr 1fr;
     justify-content: center;
     gap: 5px;
-    background: white;
+    background: lightgray;
 }
 
-
-div {
-  //padding: 10px;
-  background: #ccc;
-  //border: 1px black solid;
-}
 
 .header {
     grid-column: 1 / 4;
@@ -43,22 +35,24 @@ div {
 .grid-left {
     grid-column: 1 / 2;
     grid-row: 2 / 3;
+    text-align: center;
+    font-weight: bold;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 #grid {
     grid-column: 2 / 3;
     grid-row: 2 / 3;
-    
     display: grid;
     grid-template-rows: repeat(5,1fr);
+    aspect-ratio: 1/1;
 }
 
 .grid-right {
     grid-column: 3 / 4;
     grid-row: 2 / 3;
-
 }
-
 
 .guess-left {
     grid-column: 1 / 2;
@@ -70,44 +64,47 @@ div {
     grid-row: 3 / 4;
 }
 
-
 #keyboard {
-    //height: 400px;
-    //width: 100vw;
-
+    background-color: "#f00";
     display: grid;
     grid-template-columns: repeat(10,1fr);
     grid-template-rows: 50px 50px 50px;
-    justify-content: center;
     column-gap: 4px;
     row-gap: 10px;    
-    background: white;
+    background: blue;
     grid-column: 1 / 4;
     grid-row: 4 / 5;
-    
+    aspect-ratio: 2/1;
+    padding: 3px;
 }
-
 
 .row {
     display: grid;
     grid-template-columns: repeat(5,1fr);
-    border: blue 5px solid;
+    border: blue 3px solid;
     border-bottom: none;
-
-    width: auto;
 }
 
 #row4 {
-    border-bottom: blue 5px solid;
+    border-bottom: blue 3px solid;
 }
 
 .cell {
-    box-sizing: border;
     display: inline-block;
     border: black 1px solid;
+    aspect-ratio: 1/1;
 }
 
 #grid_0_0, #grid_1_1,#grid_2_2,#grid_3_3,#grid_4_4,#grid_4_0,#grid_3_1,
 #grid_1_3,#grid_0_4 {
-    border: 5px red solid;
+    border: 3px red solid;
+}
+
+#upBtn, #downBtn {
+    margin-top: 5px;
+}
+
+button {
+    border-radius: 5px;
+    border: none;
 }

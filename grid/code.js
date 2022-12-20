@@ -3,19 +3,14 @@ var XURDLE = {};
 (function() {
     "use strict";
 
-    var header, mainCanvas, help, statsDiv, statsCanvas, currentTab;
     var problemNumber;
-    const pi = Math.PI;
     var mode;
     
     // "main" grid
-    var selectedArrow = -1;
+    var selectedRow = -1;
     var grid;
     var reveal;
-    var sp = 4;  // spacing between rows and columns
-    // row height, column width, line width
-    var rh, cw;
-    
+    var wordFound;
     // "guess" grid    
     var correct; // word to find during this round of guesses
     var guessNumber = 0;
@@ -26,51 +21,9 @@ var XURDLE = {};
     var gStyles = [ ["","","","",""],["","","","",""],["","","","",""],
 		    ["","","","",""],["","","","",""],["","","","",""]];
 
-    var keyboardGeometry;
     var keys = [ [ "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" ],
 		 [ "A", "S", "D", "F", "G", "H", "J", "K", "L",],
 		 [ "ENTER", "Z", "X", "C", "V", "B", "N", "M", "b"] ];
-
-    var wWidth = window.innerWidth     // browser window's width
-	|| document.documentElement.clientWidth
-	|| document.body.clientWidth;
-    var wHeight = window.innerHeight     // browser window's height
-	|| document.documentElement.clientHeight
-	|| document.body.clientHeight;
-    wHeight =  window.availHeight;
-    var width = wWidth - 10;
-    var height = wHeight;
-    var cWidth = width;
-    var cHeight = height - 30;;
-    var portrait = height > width;
-    var gw = (5*rh - 6*sp)/6;
-    /*
-    while (width > 0.95*wWidth)  // adjust to fit window's width
-    {
-	rh -= 1;
-	cw = rh;
-	gw = (5*rh - 6*sp)/6;
-	width = sp+cw+sp+5*cw+2*sp+5*(gw+sp);
-    }
-*/
-    if (portrait)
-	gw = rh;
-    rh /= 1.5;
-    cw /= 1.5;
-    gw /= 2;
-    var top=rh, left=sp+cw+sp;
-    var lw = Math.max(3,0.1 * rh);
-    //var height = top + 7*rh; // canvas height
-
-    //if (portrait)
-//	height = top + 12*rh;
-    var wordFound = { "-1":0, 0:0, 1:0, 2:0, 3:0, 4:0, 5:0 };
-    // colors
-    var bkgColor = 'white';
-    var diag2WordColor = "rgba(250,100,100,1)";    
-    var horizWordColor = "rgba(50,120,200,1)";
-    var diagWordColor = diag2WordColor;
-    var centerColor = diag2WordColor;
 
     function getFromLS(key)
     {
@@ -82,103 +35,34 @@ var XURDLE = {};
 	return window.localStorage.setItem(key,JSON.stringify(value));
     }
 
-    
-    function resizeCanvas()
-    {
-
-    }
-
-    /******************************************************************
-            This code, from: https://stackoverflow.com/a/15666143
-            increases the resolution of canvas drawing by passing
-            a integer larger than one for ratio in createHiDPICanvas
-          (see init() and drawStats() for the two canvases in this app)
-    *******************************************************************/
-    var PIXEL_RATIO = (function () {
-    var ctx = document.createElement("canvas").getContext("2d"),
-        dpr = window.devicePixelRatio || 1,
-        bsr = ctx.webkitBackingStorePixelRatio ||
-        ctx.mozBackingStorePixelRatio ||
-        ctx.msBackingStorePixelRatio ||
-        ctx.oBackingStorePixelRatio ||
-        ctx.backingStorePixelRatio || 1;
-	
-	return dpr / bsr;
-    })();
-    var createHiDPICanvas = function(w, h, ratio) {
-	if (!ratio) { ratio = PIXEL_RATIO; }
-	var can = document.createElement("canvas");
-	can.width = w * ratio;
-	can.height = h * ratio;
-	can.style.width = w + "px";
-	can.style.height = h + "px";
-	can.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
-	    return can;
-    }
-    /*******************************************************************/
+        /*******************************************************************/
 
     function redraw()
     {
-	const ctx = mainCanvas.getContext("2d");
-	/*
-	ctx.beginPath();
-	ctx.fillStyle = "red";
-	ctx.strokeStyle = "black";
-	ctx.lineWidth =2;
-	var width = Math.floor(mainCanvas.style.width.slice(0,-2));
-	var height = mainCanvas.style.height.slice(0,-2);	
-	console.log(width);
-	ctx.rect(0, 0,cWidth,cHeight-5);
-	ctx.fill();
-	ctx.stroke();	
-	ctx.closePath();
-	*/
-
-	drawKeyboard();
-	console.log( "hello " + keyboardGeometry);
 	drawGrid();
-	drawScore();
-
 	/*
-	drawGuesses();
+	drawScore();
 	*/
-	//drawHeaderAndFooter();
-	
-
-
-	
-    }
-
-    function getKey(canvas, event)
-    {
-	const rect = canvas.getBoundingClientRect()
-	const x = event.clientX - rect.left
-	const y = event.clientY - rect.top
-	//console.log("x = " + x + " y = " + y);
-	const kb = keyboardGeometry;
-	//console.log("top = " + kb["top"] + " h = " + kb["h"]);	
-	const row = Math.floor((y - kb["top"]) / kb["h"]);
-	const col = Math.floor((x - kb["left"]) / (kb["w"]+kb["sp"]));
-	//console.log("row = " + row + " col = " + col);
-	if (row >= 0 && row <= 2 && col >= 0 && col <= 9)
-	    return keys[row][col];
     }
 
     function handleClick(e)
     {
-	const key = getKey(mainCanvas,e);
-	console.log("key = " + key);
+	//const key = getKey(mainCanvas,e);
+	//console.log("key = " + key);
+	const key = e.target.id || e.target.parentNode.id
+	      || e.target.parentNode.parentNode.id;
+	console.log("in Click: " + key);
+	
 	switch(key)
 	{
-	    case "u":
+	    case "upBtn":
 	    e.keyCode = 38;
-	    e.key = "ArrowUp";
-	    handleKeyDown( e );
+	    e.key = key;
 	    break;
 
-	    case "d":
+	    case "downBtn":
 	    e.keyCode = 40;
-	    e.key = "ArrowDown";
+	    e.key = key;
 	    break;
 	    case "ENTER":
 	    e.keyCode = 13;
@@ -194,44 +78,52 @@ var XURDLE = {};
 	    break;
 	}
 	handleKeyDown( e );
+
     }
 
     const appHeight = () => {
 	const doc = document.documentElement;
 	doc.style.setProperty('--app-height', (window.innerHeight) + `px`);
     }
+    
     function init()
     {
-
-	//console.log(document.documentElement.style.getProperty('--app-height'));
+	mode = "grid";
 	window.addEventListener('resize', appHeight);
 	appHeight();
-	console.log(document.documentElement.style.getPropertyValue('--app-height'));
+	//console.log(document.documentElement.style.getPropertyValue('--app-height'));
 
-	console.log(window.innerHeight);
+	//console.log(window.innerHeight);
 
 	
 	var c = document.getElementById("container");
-	c.style.gridTemplateRows = "30px 1fr 1fr 300px";
-	c.style.gridTemplateColumns = "100px 200px 100px";
+	c.style.gridTemplateRows = "30px 1fr 1fr minmax(150px,200px)";
+	c.style.gridTemplateColumns = "100px auto 100px";
 	var grid = document.getElementById("grid");
 	grid.style.display = "grid";
 	grid.style.gridTemplateRows = "repeat(5,1fr)";
-
 	
 	var r = document.getElementById("row0");
 	r.style.display = "grid";
 	r.style.gridTemplateColumns = "repeat(5,1fr)";
 
 	r = document.getElementById("row4");
-	console.log( r.style.height);
 
-	for( var r = 0; r < 3; r++)
-	    for( var c = 0; c < keys[r].length; c++)
+	var bt = document.getElementById("upBtn");
+	bt.addEventListener('click', handleClick);
+	bt = document.getElementById("downBtn");
+	bt.addEventListener('click', handleClick);
+
+	
+	// add keyboard
+	for( r = 0; r < 3; r++)
+	    for( c = 0; c < keys[r].length; c++)
 	{
 	    var kb = document.getElementById("keyboard");
 	    var bt = document.createElement("button");
 	    //bt.style.setProperty("width", "50px");
+	    bt.id =  keys[r][c];
+	    bt.addEventListener('click', handleClick);
 	    bt.innerHTML = keys[r][c];
 	    if ( keys[r][c] == "ENTER")
 	    {
@@ -247,54 +139,9 @@ var XURDLE = {};
 	    }
 	    kb.appendChild(bt);
 	}
-	//console.log( "width = " + c.style.width );
-
-	//r.style.height = "75px"; // (0 + Number(r.style.height.slice(0,-2))) + "px";
-	/*
-	//console.log("avail:  " + width + " by " + height);
-	//console.log("window: " + wWidth + " by " + wHeight);
-	//document.getElementById("myHeader").height = 100;
-	//console.log ("hello " + document.getElementById("myHeader"));
-	document.getElementById("myHeader").style.width = width + "px";
-
-	//document.getElementById("myHeader").style.height = 30 + "px";
-	// game is NOT already loaded: create the game gadgets
-	if (! mainCanvas)
-	{
-	    document.addEventListener('keydown', handleKeyDown);
-	    //window.addEventListener('resize', resizeCanvas);	    
-	
-	    // game header
-	    document.getElementById("titleDiv").style.width = "100%"; //wWidth + "px";
-
-	    // main game canvas
-	    mainCanvas = createHiDPICanvas(cWidth, cHeight, 4); // higher resolution
-	    mainCanvas.setAttribute("id","canvas");
-	    document.getElementById("canvasDiv").appendChild( mainCanvas );
-	    mainCanvas.addEventListener('click', handleClick);	    
-	    
-	    // stats tab
-	    statsDiv = document.getElementById("stats");
-	    statsCanvas = createHiDPICanvas(width,height,4); // hi resolution!
-	    statsCanvas.setAttribute("id","statsCanvas");
-	    statsDiv.appendChild( statsCanvas );
-	    statsDiv.setAttribute("style","width: " + width + "px");
-	    statsDiv.style.width = width +"px";
-	    // help tab
-	    help = document.getElementById("help");
-	    help.setAttribute("style","width: " + width + "px");
-	    help.style.width = width +"px";
-	    // web counter
-	    var counter = document.getElementById("counter");
-	    //counter.setAttribute("style","width: " + width + "px");
-	    counter.style.width = width +"px";
-	}// game widgets creation
-
-	width = mainCanvas.style.width.slice(0,-2);
-	height = mainCanvas.style.height.slice(0,-2);
-	//console.log(width + " by " + height);
-	currentTab = mainCanvas;
-
+	initDataStructures();
+	drawGrid();
+/*
 	// is local storage empty?
 	if (! window.localStorage.getItem("numPlayed") )
 	{   // if so, initialize it
@@ -319,7 +166,7 @@ var XURDLE = {};
     function initDataStructures()
     {
 	mode = "grid";
-	selectedArrow = -1;
+	selectedRow = -1;
 	guessNumber = 0;
 	charIndex = 0;
 	totalGuesses = 0;
@@ -336,12 +183,13 @@ var XURDLE = {};
 		 ["","","","",""],
 		 ["","","","",""] ];
 	reveal = [ [0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+	/*
 	for(var r = 0; r < 5; r++)
 	    for(var c = 0; c < 5; c++)
         {
 	    grid[r][c] = g[r].charAt(c);
 	}
-
+*/
     }// initDataStructures()
 
     function showHelp()
@@ -566,10 +414,11 @@ var XURDLE = {};
 	var code = Number(event.keyCode);	
 	var key = event.key;
 
-	//console.log(code + " " + key);
+	console.log("here " + code + " " + key);
+/*
 	if (currentTab !== mainCanvas)
 	    return;
-	
+*/	
 	if (mode === "nextGame?")
 	{
 	    problemNumber++;
@@ -577,112 +426,108 @@ var XURDLE = {};
 	    init();
 	} else if (mode === "grid")
 	{
-	    if (key === 'ArrowDown' &&
-		selectedArrow < 5)
+	    if (key === 'downBtn' && selectedRow < 5)
 	    {
-		var newSelection = selectedArrow + 1;
+		var newSelection = selectedRow + 1;
 		while (newSelection <= 6 && wordFound[newSelection] === 1)
 		    newSelection++;
 		if (newSelection != 6)
-		    selectedArrow = newSelection;
+		    selectedRow = newSelection;
 	    }
-	    else if (key === 'ArrowUp' &&
-		     selectedArrow > -1)
+	    else if (key === 'upBtn' && selectedRow > -1)
 	    {
-		    var newSelection = selectedArrow - 1;
-		    while (newSelection > -2 && wordFound[newSelection] === 1)
-			newSelection--;
-		    if (newSelection != -2)
-			selectedArrow = newSelection;
-		}
-		else if (code >= 65 && code <= 90)
-		{
-		    mode = "guess";
-		    correct = getWordInGrid(selectedArrow);
-		}
+		var newSelection = selectedRow - 1;
+		while (newSelection > -2 && wordFound[newSelection] === 1)
+		    newSelection--;
+		if (newSelection != -2)
+		    selectedRow = newSelection;
+	    } else if (code >= 65 && code <= 90)
+	    {
+		mode = "guess";
+		correct = getWordInGrid(selectedRow);
+	    }
 	    if (event.stopPropagation)
 		event.stopPropagation();
 	    redraw();
-	    }
-	    if (mode === "guess")
+	} else if (mode === "guess")
+	{
+	    if (code === 13) // return/enter key
 	    {
-		if (code === 13) // return/enter key
+		if (charIndex === 5)  // complete guess
 		{
-		    if (charIndex === 5)  // complete guess
-		    {
-			var guess = guesses[guessNumber].join("");
-			if (validGuesses.indexOf(guess.toLowerCase()) < 0 &&
-			    words.indexOf(guess.toLowerCase()) < 0)
-			{  // not a dictionary word			     			 
-			    notInWordList();
-			    setTimeout(function()
-				       {
+		    var guess = guesses[guessNumber].join("");
+		    if (validGuesses.indexOf(guess.toLowerCase()) < 0 &&
+			words.indexOf(guess.toLowerCase()) < 0)
+		    {  // not a dictionary word			     			 
+			notInWordList();
+			setTimeout(function()
+				   {
 					   redraw();
-				       }, 1000);
-			} else // valid guess
-			{
-			    var correctGuess = score(guesses[guessNumber]);
-			    totalGuesses++;
-			    if (correctGuess || guessNumber === 5)
-			    {
-				if (guessNumber === 5) // ran out of guesses
-				    totalGuesses++;  // 1 penalty point
-				updateWordInGrid();
-				wordFound[selectedArrow] = 1;
-				if (0 <= selectedArrow &&  // if not a
-				    selectedArrow <= 4)    // diagonal
-				{
-				    //check one diagonal ...
-				    var count = 0;
-				    for( var i = 0; i < 5; i++ )
-					count += reveal[i][i];
-				    if (count === 5)
-					wordFound[-1] = 1;
-
-				    // ... and the other
-				    count = 0;
-				    for( var i = 0; i < 5; i++ )
-					count += reveal[4-i][i];
-				    if (count === 5)
-					wordFound[5] = 1;			
-				}
-				guessNumber = 0;
-				gStyles = [ ["","","","",""],["","","","",""],
-					    ["","","","",""],["","","","",""],
-					    ["","","","",""],["","","","",""]];
-				guesses = [ ["","","","",""],["","","","",""],
-					    ["","","","",""],["","","","",""],
-					    ["","","","",""],["","","","",""]];
-				selectedArrow = -1;
-				while (selectedArrow < 6 &&
-				       wordFound[selectedArrow] === 1)
-				    selectedArrow++;
-				if (selectedArrow === 6)
-				{
-				    
-				    gameOver();
-				    return;
-				} else
-				{
-				    mode = "grid";
-				}
-			    } else
-			    {
-				guessNumber++;
-			    }
-			    charIndex = 0;
-			    redraw();
-			}
-		    }
-		} else if (code >= 65 && code <= 90) // letter key
-		{
-		    if (charIndex < 5)
+				   }, 1000);
+		    } else // valid guess
 		    {
-			guesses[guessNumber][charIndex] = key.toUpperCase();
-			charIndex++;
-			redraw();
+			var correctGuess = score(guesses[guessNumber]);
+			totalGuesses++;
+			if (correctGuess || guessNumber === 5)
+			{
+			    if (guessNumber === 5) // ran out of guesses
+				    totalGuesses++;  // 1 penalty point
+			    updateWordInGrid();
+			    wordFound[selectedRow] = 1;
+			    if (0 <= selectedRow &&  // if not a
+				selectedRow <= 4)    // diagonal
+			    {
+				//check one diagonal ...
+				    var count = 0;
+				for( var i = 0; i < 5; i++ )
+				    count += reveal[i][i];
+				if (count === 5)
+				    wordFound[-1] = 1;
+				
+				// ... and the other
+				    count = 0;
+				for( var i = 0; i < 5; i++ )
+				    count += reveal[4-i][i];
+				if (count === 5)
+				    wordFound[5] = 1;			
+			    }
+			    guessNumber = 0;
+			    gStyles = [ ["","","","",""],["","","","",""],
+					["","","","",""],["","","","",""],
+					["","","","",""],["","","","",""]];
+			    guesses = [ ["","","","",""],["","","","",""],
+					["","","","",""],["","","","",""],
+					["","","","",""],["","","","",""]];
+				selectedRow = -1;
+			    while (selectedRow < 6 &&
+				   wordFound[selectedRow] === 1)
+				selectedRow++;
+			    if (selectedRow === 6)
+			    {
+				
+				gameOver();
+				return;
+				} else
+			    {
+				mode = "grid";
+			    }
+			} else
+			{
+			    guessNumber++;
+			}
+			charIndex = 0;
+			    redraw();
 		    }
-		} else if (code === 8 || code === 46) // backspace or delete
+		}
+	    } else if (code >= 65 && code <= 90) // letter key
+	    {
+		if (charIndex < 5)
+		{
+		    guesses[guessNumber][charIndex] = key.toUpperCase();
+		    charIndex++;
+		    redraw();
+		}
+	    } else if (code === 8 || code === 46) // backspace or delete
 		{
 		    if (charIndex > 0)
 		    {
@@ -691,7 +536,7 @@ var XURDLE = {};
 			redraw();
 		    }
 		}
-	    }// in guess mode
+	}// in guess mode
     };
 
  
@@ -930,18 +775,18 @@ var XURDLE = {};
 
     function updateWordInGrid()
     {
-	if (selectedArrow === -1)
+	if (selectedRow === -1)
 	{
 	    for( var c = 0; c < 5; c++)
 		reveal[c][c] = 1;
-	} else if (selectedArrow === 5)
+	} else if (selectedRow === 5)
 	{
 	    for( var c = 0; c < 5; c++)
 		reveal[4-c][c] = 1;
 	} else
 	{
 	    for( var c = 0; c < 5; c++)
-		reveal[selectedArrow][c] = 1;
+		reveal[selectedRow][c] = 1;
 	}
     }
     
@@ -957,297 +802,38 @@ var XURDLE = {};
 
     function drawGrid()
     {
-	//var r = 10; // radius
-	var bkgColor = "rgb(220, 220, 255)";
-	var gray = "rgb(180,180,180)";
-	var lightgray = "rgb(240,240,240)";
-	var black = "rgb(0,0,0)";
-	var white = "rgb(255,255,255)";
-	var gWidth = 0.9 * cWidth;
-	var gHeight = keyboardGeometry.top /2;	
-	rh = Math.floor( Math.min( gWidth / 6, gHeight / 6) );
-	cw = rh;
-	var lw = 5; // for row and diagonal boxes
-	var lw2 = 2; // for vertical black lines
-	//var left = 50 + Math.floor( 0.1*cWidth / 2 );
-	var left = Math.floor(cWidth / 2 - 2.5*cw);	
-	var top = rh;
 	var unselected = 'rgb(220,220,250)';
-	if (mainCanvas.getContext)
+	var selected = 'white';	
+	var id;
+	for(var row = 0; row < 5; row++)
 	{
-            const ctx = mainCanvas.getContext("2d");
-	    var dx, dy;
+	    for(var i = 0; i < 5; i++)
+		document.getElementById("grid_" + row + "_" + i)
+		.style.background = unselected;
+	}
+	id = "row" + selectedRow;
+	
+	switch (selectedRow)
+	{
+	    case -1:
+	    for(var i = 0; i < 5; i++)
+		document.getElementById("grid_" + i + "_" + i)
+		.style.background = selected;
+	    break;
+	    case 5:
+	    for(var i = 0; i < 5; i++)
+		document.getElementById("grid_" + (4-i) + "_" + i)
+		.style.background = selected;
+	    break;
+	    default:
+	    for(var i = 0; i < 5; i++)
+		document.getElementById("grid_" + selectedRow + "_" + i)
+		.style.background = selected;
 
-	    ctx.beginPath();
-	    ctx.lineWidth = lw;
-	    ctx.strokeStyle = horizWordColor;
-
-	    //***********************  horizontal boxes *************************
-	    var row = 0;
-	    for( dy = 0; dy < 5*rh; dy += rh)   
-	    {
-		ctx.beginPath();
-		ctx.lineCap = "butt";
-		ctx.strokeStyle = horizWordColor;
-		if (selectedArrow == row)
-		    ctx.fillStyle = lightgray;
-		else
-		    ctx.fillStyle = unselected;
-		//myRoundRect(ctx, left, top + dy, 5*cw, rh, 20);
-		ctx.rect(left, top + dy, 5*cw, rh);		
-		//ctx.roundRect(left, top + dy, 5*cw, rh, 20);
-		ctx.fill();
-		ctx.stroke();
-		row++;
-	    }
-
-	    ctx.beginPath();	    // black vertical lines in the grid
-	    ctx.lineWidth = lw2;
-	    ctx.strokeStyle = "#000000";
-	    ctx.lineCap = "butt";
-	    for(var c = 1; c < 5; c++)  
-	    {
-		for(var r = 0; r < 5; r++)
-		{
-		    if ( (r===0 && (c===2 || c===3)) ||
-			 (r===2 && (c===1 || c===4)) ||
-			 (r===4 && (c===2 || c===3)) )		     
-		    {
-			ctx.moveTo(left + c*cw, top+r*rh+lw/2);
-			ctx.lineTo(left + c*cw, top+r*rh+rh-lw/2);
-		    }
-		}
-	    }
-	    ctx.stroke();
-
-	    //***********************  diagonal line #1  *************************
-	    var x = left,
-		y = top;
-	    
-	    //grid[0][0]
-	    drawCell(ctx,diagWordColor,
-		     selectedArrow <= 0 ? lightgray : unselected,
-		     left+lw,y+lw,cw-lw-lw2,rh-2*lw,0,
-		     's','s','s','s');
-	    //grid[1][1]
-	    drawCell(ctx,diagWordColor,
-		     selectedArrow === -1 || selectedArrow === 1 ?
-		     lightgray : unselected,
-		     left+cw+lw2,y+rh+lw,cw-lw,rh-2*lw,0,
-		     's','s','s','s');	
-	    //grid[2][2]
-	    drawCell(ctx,centerColor,
-		     selectedArrow === -1 || selectedArrow === 2
-		     || selectedArrow === 5? lightgray : unselected,
-		     left+2*cw+lw2,y+2*rh+lw,cw-lw,rh-2*lw,0,
-		     's','s','s','s');
-	    //grid[3][3]
-	    drawCell(ctx,diagWordColor,
-		     selectedArrow === -1 || selectedArrow === 3 ? lightgray :
-		     unselected,
-		     left+3*cw+lw2,y+3*rh+lw,cw-lw,rh-2*lw,0,		     
-		     's','s','s','s');	
-	    //grid[4][4]
-	    drawCell(ctx,diagWordColor,
-		     selectedArrow === -1 || selectedArrow === 4?
-		     lightgray : unselected,
-		     left+4*cw+lw2,y+4*rh+lw,cw-lw-lw2,rh-2*lw,0,
-		     's','s','s','s');
-	    //grid[4][0]
-	    drawCell(ctx,diag2WordColor,
-		     selectedArrow >= 4? lightgray : unselected,
-		     left+lw,y+4*rh+lw,cw-lw-lw2,rh-2*lw,0,		     
-		     's','s','s','s');
-	    //grid[3][1]
-	    drawCell(ctx,diag2WordColor,
-		     selectedArrow === 3 || selectedArrow === 5?
-		     lightgray : unselected,
-		     left+cw+lw2,y+3*rh+lw,cw-lw,rh-2*lw,0,		     
-		     's','s','s','s');
-	    //grid[1][3]
-	    drawCell(ctx,diag2WordColor,
-		     selectedArrow === 1 || selectedArrow === 5 ?
-		     lightgray : unselected,
-		     left+3*cw+lw2,y+rh+lw,cw-lw,rh-2*lw,0,
-		     's','s','s','s');
-	    //grid[0][4]
-	    drawCell(ctx,diag2WordColor,
-		     selectedArrow === 0 || selectedArrow === 5 ?
-		     lightgray : unselected,
-		     left+4*cw+lw2,y+lw,cw-lw-lw2,rh-2*lw,0,
-		     's','s','s','s');
-
-
-	    for(var r = 0; r < 5; r++)         // draw arrows
-		drawArrow(ctx,left-0.6*cw-lw,top+(r*rh)+0.245*rh,
-			  0.49*rh, horizWordColor, selectedArrow === r);
-	    drawDiagonalArrow(ctx,left-0.6*cw,top-0.49*rh,0.4*rh,diagWordColor,
-			      selectedArrow === -1);
-
-	    drawDiagonalArrow2(ctx,left-0.6*cw, top+5*rh,0.4*rh,diag2WordColor,
-			       selectedArrow === 5);
-
-	    for( var r = 0; r < 5; r++)         // draw letters
-		for( var c = 0; c < 5; c++)
-		    if (reveal[r][c] === 1)
-			drawLetter(ctx,grid[r][c].toUpperCase(),
-				   left+c*cw+lw/2+cw/2-4,        // x
-				   top+r*rh+rh*0.8,        // y
-				   cw,                    // width
-				   Math.floor(rh*0.5),        // height
-				   black,
-				   //selectedArrow == r
-				   //|| (selectedArrow === -1 && r === c )
-				   //|| (selectedArrow === 5 && r + c === 4)
-				   //? black : white,
-				   true
-				  );
+	    document.getElementById(id).style.background = selected;
+	    break;
 	}
     }//  drawGrid
-
-    // added to run in Firefox
-    function myRoundRect(ctx,left, top, w, h, r,fill)
-    {
-	ctx.beginPath();
-	if (ctx.roundRect)
-	{
-	    ctx.roundRect(left, top, w, h, r);
-	}
-	else
-	{
-	    ctx.moveTo(left+r, top);
-	    ctx.lineTo(left+w-r,top);
-	    ctx.arc(left+w-r, top+r, r, 3*pi/2, 2*pi);
-	    ctx.lineTo(left+w,top+h-r);
-	    ctx.arc(left+w-r, top+h-r, r, 0, pi/2);
-	    ctx.lineTo(left+r,top+h);
-	    ctx.arc(left+r, top+h-r, r, pi/2, pi);
-	    ctx.lineTo(left,top+r);
-	    ctx.arc(left+r, top+r, r, pi, 3*pi/2);
-	}
-	ctx.stroke();
-	if (fill)
-	    ctx.fill();
-    }
-
-    function drawLetter(ctx,l,x,y,w,h,color,bold,align)
-    {
-	ctx.beginPath();
-	ctx.textAlign = align ? align : 'center';
-	ctx.fillStyle = color;
-	ctx.font = (bold ? '600 ' : '') + h + 'px Arial';
-	ctx.fillText(l,x,y,0.8*w)
-    }// drawLetter
-
-    function drawCell(ctx,color,color2,left,top,w,h,r,
-		      tl,tr,br,bl)
-    {
-	ctx.beginPath();
-	ctx.strokeStyle = color;
-	ctx.fillStyle = color2;
-	ctx.lineWidth = Math.max(3,0.1*rh);;
-	// top edge
-	ctx.moveTo(left + (tl !== 's' ? r : 0),top);
-	ctx.lineTo(left+w-(tr !== 's' ? r : 0),top);
-	if (tr === 'r')
-	    ctx.arc(left+w-r,top+r,r,1.5*pi,2*pi);
-	// right edge
-	ctx.lineTo(left+w,top+h-(br !== 's' ? r : 0));
-	if (br === 'r')
-	    ctx.arc(left+w-r,top+h-r,r,0,pi/2);    
-	// bottom edge
-	ctx.lineTo(left+(bl !== 's' ? r : 0),top+h);
-	//left edge
-	if (bl === 'r')
-	    ctx.arc(left+r,top+h-r,r,pi/2,pi);
-	ctx.lineTo(left,top+(tl !== 's' ? r : -ctx.lineWidth/2));
-	if (tl === 'r')
-	    ctx.arc(left+r,top+r,r,pi,1.5*pi);
-	ctx.stroke();
-	ctx.fill();
-    }// drawCell
-
-    function drawArrow(ctx,x,y,h,color,frame)
-    {
-	var u = h/8; // grid size of this arrow's box whose size if 10u by 7u
-	ctx.lineWidth = 1;
-	// first, erase the existing arrow
-	ctx.beginPath();
-	ctx.fillStyle = 'white';
-	ctx.rect(x,y,10*u,8*u);    
-	ctx.fill();
-	ctx.closePath();
-
-	if (frame)
-	{
-    	    ctx.beginPath();
-	    myRoundRect(ctx,x,y,10*u-sp/2,8*u,10)
-	    ctx.strokeStyle = 'black';
-	    ctx.fillStyle = 'rgb(240,240,240)';	    
-	    ctx.fill();
-	    ctx.stroke();
-	    ctx.closePath();	
-	}
-
-	ctx.beginPath();
-	ctx.fillStyle = color;
-	x += u;         y += 2.5*u;     ctx.moveTo(x,y);
-	x += 5*u;                       ctx.lineTo(x,y);
-	                y -= 2*u;       ctx.lineTo(x,y);
-	x += 3*u;       y += 3.5*u;       ctx.lineTo(x,y);
-	x -= 3*u;       y += 3.5*u;       ctx.lineTo(x,y);	
-	y -= 2*u;                       ctx.lineTo(x,y);
-	x -= 5*u;                       ctx.lineTo(x,y);	
-	ctx.fill();
-	ctx.closePath();
-
-    }// drawArrow
-
-
-    function drawDiagonalArrow(ctx,x,y,h,color,frame)
-    {
-	var u = Math.floor(h/7); // grid size of this arrow's box whose size if 10u by 7u
-	ctx.lineWidth = 1;
-	// first, erase the existing arrow
-	ctx.beginPath();
-	ctx.fillStyle = 'white';    
-	ctx.rect(x-1,y-1,10*u+2,7*u+2);    
-	ctx.fill();
-	ctx.closePath();
-
-	if (frame)
-	{
-    	    ctx.beginPath();
-	    myRoundRect(ctx,x, y,10*u,7*u, 10);
-	    ctx.fillStyle = 'rgb(240,240,240)';	    	    
-	    ctx.strokeStyle = 'black';   
-	    ctx.fill();
-	    ctx.stroke();	    
-	    ctx.closePath();	
-	}
-	ctx.beginPath();
-	ctx.fillStyle = color;
-	x += u;         y += u;         ctx.moveTo(x,y);
-	x += 5*u;                       ctx.lineTo(x,y);
-	x += 2*u;       y += 2*u;       ctx.lineTo(x,y);
-	x += u;         y -= u;         ctx.lineTo(x,y);
-	                y += 4*u;       ctx.lineTo(x,y);
-	x -= 4*u;                       ctx.lineTo(x,y);
-	x += u;         y -= u;         ctx.lineTo(x,y);
-	x -= 1.5*u;     y -= 1.5*u;     ctx.lineTo(x,y);	
-	x -= 3.5*u;                       ctx.lineTo(x,y);
-	ctx.fill();
-	ctx.closePath();
-    }// drawDiagonalArrow
-
-    function drawDiagonalArrow2(ctx,x,y,h,color,frame)
-    {
-	ctx.save();
-	ctx.translate(x,y);	
-	ctx.transform(1, 0, 0, -1, 0, h)
-	drawDiagonalArrow(ctx,0,0,h,color,frame);
-	ctx.restore();
-    }// drawDiagonalArrow2
 
     // end of code
 
@@ -1258,5 +844,6 @@ var XURDLE = {};
     XURDLE.showHelp = showHelp;
     XURDLE.hideHelp = hideHelp;
     XURDLE.showStats = showStats;
-    XURDLE.hideStats = hideStats;        
+    XURDLE.hideStats = hideStats;
+    XURDLE.handleClick = handleClick;            
 })();
