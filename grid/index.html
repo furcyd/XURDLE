@@ -6,9 +6,20 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>XURDLE game</title>
     <link rel="stylesheet" href="style.css">
-    <script src="./code.js"></script>
+    <script>
+     const appHeight = () => {
+	const doc = document.documentElement;
+	doc.style.setProperty('--app-height', (window.innerHeight-20) + `px`);
+     }
+     window.addEventListener('resize', appHeight);
+     appHeight();
+     console.log(document.documentElement.style.getPropertyValue('--app-height'));
+
+     console.log(window.innerHeight);
+
+    </script>
   </head>
-  <body onload="XURDLE.init();">
+  <body>
     <div class="container">
       <div class="header">header</div>
       <div class="grid-left">grid-left</div>

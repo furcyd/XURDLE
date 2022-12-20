@@ -202,10 +202,12 @@ var XURDLE = {};
     }
     function init()
     {
-
+	//console.log(document.documentElement.style.getProperty('--app-height'));
 	window.addEventListener('resize', appHeight);
 	appHeight();
+	console.log(document.documentElement.style.getPropertyValue('--app-height'));
 
+	console.log(window.innerHeight);
 	/*
 	//console.log("avail:  " + width + " by " + height);
 	//console.log("window: " + wWidth + " by " + wHeight);
