@@ -9,12 +9,12 @@
     <script>
      const appHeight = () => {
 	const doc = document.documentElement;
-	doc.style.setProperty('--app-height', (window.innerHeight-20) + `px`);
+	doc.style.setProperty('--app-height', window.innerHeight + `px`);
      }
      window.addEventListener('resize', appHeight);
      appHeight();
-     console.log("hello "  + document.documentElement.style.getPropertyValue('--app-height'));
-
+     console.log(
+     "hello "  + document.documentElement.style.getPropertyValue('--app-height'));
      console.log(window.innerHeight);
 
     </script>
