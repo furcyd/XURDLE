@@ -4,7 +4,9 @@ var XURDLE = {};
     "use strict";
 
     var container, helpDiv, statsDiv, currentTab;
-    var gameWidth, gameLeft;
+    var	gridLeftContent = "Select a row or diagonal to guess next. <button id=\"upBtn\" class=\"icon\"><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"20\" viewBox=\"0 0 20 20\" width=\"20\"> <polygon points=\"10,5 18,18 2,18\" style=\"fill:black;stroke:black;stroke-width:1\" /> </svg> </button><br /> <button id=\"downBtn\" class=\"icon\"> <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"20\" viewBox=\"0 0 20 20\" width=\"20\"> <polygon points=\"10,18 18,5 2,5\" style=\"fill:black;stroke:black;stroke-width:1\" /> </svg> </button>";
+
+    var gameWidth;
     var problemNumber;
     var mode;
     
@@ -26,7 +28,8 @@ var XURDLE = {};
     var keys = [ [ "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" ],
 		 [ "A", "S", "D", "F", "G", "H", "J", "K", "L",],
 		 [ "ENTER", "Z", "X", "C", "V", "B", "N", "M", "b"] ];
-
+    var gLetterHeight;
+    
     function getFromLS(key)
     {
 	return JSON.parse(window.localStorage.getItem(key));
@@ -37,23 +40,74 @@ var XURDLE = {};
 	return window.localStorage.setItem(key,JSON.stringify(value));
     }
 
-        /*******************************************************************/
-
-    function redraw()
+    function updateScore()
     {
-	drawGrid();
+	var div = document.getElementById("grid-right-middle");
+	div.innerHTML = "Score<br />" + totalGuesses;
+    }
+    
+    /*******************************************************************/
+
+    function restyle()
+    {
+	styleGrid();
+	updateScore();	
+	styleGuesses();
 	/*
 	drawScore();
 	*/
     }
 
+    function styleGuesses()
+    {
+	gLetterHeight = Math.floor(getComputedStyle(
+	    document.getElementById("guess_0_0")).height.slice(0,-2));
+	var fontSize = Math.floor(gLetterHeight-5) +"px";
+	
+	for( var r = 0; r < 6; r++)
+	{
+	    for(var c = 0; c < 5; c++)	   
+	    {
+		var cell =  document.getElementById("guess_" + r + "_" + c);
+		cell.style.font = "600 " + fontSize + " Arial";
+		//cell.style.lineHeight = fontSize;
+		switch (gStyles[r][c])
+		{   //******** cell background ****************
+		    case "g":		   
+		    cell.style.background = '#6aaa64'; // green
+		    break;
+		    case "y":
+		    cell.style.background = '#cebb58'; // yellow
+		    break;
+		    default:
+		    cell.style.background = 'white';
+		    break;		    
+		}
+		//******** cell letter ****************
+		cell.innerHTML = guesses[r][c];
+
+		//******** cell border ****************
+		if (mode === "guess" && r <= guessNumber)
+		{
+		    cell.style.border = "black 1px solid";
+		}
+	    }
+	}
+
+	// empty out guess-right cell
+	//document.getElementById("guess-right-middle-span").innerHTML = "";
+	document.getElementById("guess-right-middle-span")
+	    .style.display = "none";
+
+    }
+    
     function handleClick(e)
     {
 	//const key = getKey(mainCanvas,e);
 	//console.log("key = " + key);
 	const key = e.target.id || e.target.parentNode.id
 	      || e.target.parentNode.parentNode.id;
-	console.log("in Click: " + key);
+	//console.log("in Click: " + key);
 	
 	switch(key)
 	{
@@ -95,7 +149,7 @@ var XURDLE = {};
 	    "35px 10px 1fr 1fr minmax(150px,200px)";
 	//c.style.gridTemplateColumns = "100px auto 100px";
 	container.style.gridTemplateColumns =
-	    "minmax(100px,fit-content) auto minmax(100px,fit-content)";
+	    "100px auto 100px";
 	
 	
 	var grid = document.getElementById("grid");
@@ -110,9 +164,6 @@ var XURDLE = {};
 
 	gameWidth = getComputedStyle(
 	    document.getElementById("keyboard")).width.slice(0,-2);
-	//gameLeft = getComputedStyle(
-	  //  document.getElementById("keyboard")).style.left.slice(0,-2);	
-	console.log( "gameLeft = " + document.getElementById("keyboard").style.left);
     }
 
     function styleHelp()
@@ -126,6 +177,8 @@ var XURDLE = {};
     function init()
     {
 	mode = "grid";
+	showGridLeft();
+	hideGuessLeft();	
 	window.addEventListener('resize', appHeight);
 	appHeight();
 	document.addEventListener('keydown', handleKeyDown);
@@ -135,8 +188,7 @@ var XURDLE = {};
 	    container = document.getElementById("container");
 	    helpDiv = document.getElementById("helpDiv");
 	    statsDiv = document.getElementById("statsDiv");
-	    	var bt = document.getElementById("upBtn");
-
+	    var bt = document.getElementById("upBtn");
 	    bt.addEventListener('click', handleClick);
 	    bt = document.getElementById("downBtn");
 	    bt.addEventListener('click', handleClick);
@@ -168,15 +220,10 @@ var XURDLE = {};
 	    }
 	    
 	}
-
+	currentTab = container;
 	styleContainer();
 	styleHelp();	
 
-
-	console.log( "game width = " + gameWidth );
-	initDataStructures();
-	drawGrid();
-/*
 	// is local storage empty?
 	if (! window.localStorage.getItem("numPlayed") )
 	{   // if so, initialize it
@@ -194,8 +241,8 @@ var XURDLE = {};
 	    problemNumber = getFromLS("problemNumber");
 	}
 	initDataStructures();
-	redraw();
-	*/
+	restyle();
+	
     }// init
 
     function initDataStructures()
@@ -211,20 +258,45 @@ var XURDLE = {};
 	wordFound = { "-1":0, 0:0, 1:0, 2:0, 3:0, 4:0, 5:0 };
 	console.log("pb# = " + problemNumber);
 	var g = decode( 2*(problemNumber - 1) );
+	console.log(g);
 	grid = [ ["","","","",""],
 		 ["","","","",""],
 		 ["","","","",""],
 		 ["","","","",""],
 		 ["","","","",""] ];
 	reveal = [ [0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
-	/*
+
 	for(var r = 0; r < 5; r++)
 	    for(var c = 0; c < 5; c++)
         {
 	    grid[r][c] = g[r].charAt(c);
 	}
-*/
     }// initDataStructures()
+
+    function showGridLeft()
+    {
+	var div = document.getElementById("grid-left-middle");
+	//div.style.display = "table";
+	div.innerHTML = gridLeftContent;
+    }
+
+    function hideGridLeft()
+    {	
+	var div = document.getElementById("grid-left-middle");
+	div.innerHTML = "";
+    }
+
+    function showGuessLeft()
+    {
+	var div = document.getElementById("guess-left");
+	div.style.display = "table";
+    }
+
+    function hideGuessLeft()
+    {
+	var div = document.getElementById("guess-left");
+	div.style.display = "none";
+    }
 
     function showHelp()
     {
@@ -353,25 +425,27 @@ var XURDLE = {};
     //*******************************************************************
     //               handle all key presses
     //*******************************************************************
+    
     function handleKeyDown(event)
     {
 	var code = Number(event.keyCode);	
 	var key = event.key;
-	if (key === "ArrowDown")
-	    key = "downBtn";
-	if (key === "ArrowUp")
-	    key = "upBtn";	
-	console.log("here " + code + " " + key);
-/*
-	if (currentTab !== mainCanvas)
+	if (key === "ArrowDown") key = "downBtn";
+	if (key === "ArrowUp")   key = "upBtn";	
+	//console.log("here " + code + " " + key);
+
+	if (currentTab !== container)
 	    return;
-*/	
+		
 	if (mode === "nextGame?")
 	{
 	    problemNumber++;
 	    saveToLS("problemNumber",problemNumber);
 	    init();
 	} else if (mode === "grid")
+
+	    /********** in grid mode ***********************/
+
 	{
 	    if (key === 'downBtn' && selectedRow < 5)
 	    {
@@ -390,33 +464,46 @@ var XURDLE = {};
 		    selectedRow = newSelection;
 	    } else if (code >= 65 && code <= 90)
 	    {
+		/*** switch to guess mode ***/
 		mode = "guess";
+		hideGridLeft();
+		showGuessLeft();	
 		correct = getWordInGrid(selectedRow);
+		console.log(correct);
 	    }
 	    if (event.stopPropagation)
 		event.stopPropagation();
-	    redraw();
-	} else if (mode === "guess")
+	    restyle();
+	}
+	if (mode === "guess")
+	    /********** in guess mode ***********************/
 	{
 	    if (code === 13) // return/enter key
 	    {
-		if (charIndex === 5)  // complete guess
+		/********** return key in guess mode ******************/
+		
+		if (charIndex === 5) 
 		{
+		    /********** complete word guessed ****************/
+		    
 		    var guess = guesses[guessNumber].join("");
 		    if (validGuesses.indexOf(guess.toLowerCase()) < 0 &&
 			words.indexOf(guess.toLowerCase()) < 0)
-		    {  // not a dictionary word			     			 
+		    {
+			/********** non-existing word guessed ************/
 			notInWordList();
 			setTimeout(function()
 				   {
-					   redraw();
-				   }, 1000);
+					   restyle();
+				   }, 2000);
 		    } else // valid guess
 		    {
+			/********** existing word guessed ****************/
 			var correctGuess = score(guesses[guessNumber]);
 			totalGuesses++;
 			if (correctGuess || guessNumber === 5)
 			{
+			    /*** correct guess or ran out of guesses ***/
 			    if (guessNumber === 5) // ran out of guesses
 				    totalGuesses++;  // 1 penalty point
 			    updateWordInGrid();
@@ -450,39 +537,42 @@ var XURDLE = {};
 				   wordFound[selectedRow] === 1)
 				selectedRow++;
 			    if (selectedRow === 6)
-			    {
-				
+			    {				
 				gameOver();
 				return;
 				} else
 			    {
+				/**** go back to grid mode *****/
 				mode = "grid";
 			    }
 			} else
 			{
+			    /*** incorrect guess & not done *******/
 			    guessNumber++;
 			}
 			charIndex = 0;
-			    redraw();
-		    }
-		}
+			restyle();
+		    }// valid guess
+		}// return key and complete guess
 	    } else if (code >= 65 && code <= 90) // letter key
 	    {
+		//**** letter typed  *******/
 		if (charIndex < 5)
 		{
 		    guesses[guessNumber][charIndex] = key.toUpperCase();
 		    charIndex++;
-		    redraw();
+		    restyle();
 		}
-	    } else if (code === 8 || code === 46) // backspace or delete
+	    } else if (code === 8 || code === 46) 
+	    {
+		/**** backspace or delete *******/
+		if (charIndex > 0)
 		{
-		    if (charIndex > 0)
-		    {
-			charIndex--;
-			guesses[guessNumber][charIndex] = "";
-			redraw();
-		    }
+		    charIndex--;
+		    guesses[guessNumber][charIndex] = "";
+		    restyle();
 		}
+	    }
 	}// in guess mode
     };
 
@@ -521,18 +611,10 @@ var XURDLE = {};
     
     function notInWordList()
     {
-	if (mainCanvas.getContext)
-	{
-            const ctx = mainCanvas.getContext("2d");
-	    var x = left+5*cw+20, y = top + guessNumber*(gw+sp) + 0.1*gw;
-	    ctx.beginPath();
-	    ctx.fillStyle = 'black';
-	    ctx.rect(x+gw/2,y,4*(gw+sp),gw*0.8);
-	    ctx.fill();
-	    drawLetter(ctx,"Not in word list",
-		   x + 2*(gw+sp) + gw/2,y+0.7*gw,
-		   4*gw,0.5*gw,'white');
-	}
+	var span = document.getElementById("guess-right-middle-span");
+	span.style.display = "inline-block";
+	span.innerHTML =
+	    "The word you guessed is not in the accepted word list.";
     }// notInWordList()
 
     function gameOver()
@@ -547,7 +629,7 @@ var XURDLE = {};
 	{
             const ctx = mainCanvas.getContext("2d");
 	    var x = left+5*cw+20+gw/2, y = top + 0.5*gw;
-	    redraw();
+	    restyle();
 	    ctx.beginPath();
 	    ctx.fillStyle = 'green';
 	    ctx.rect(x,y,4*(gw+sp),5*(gw+sp));
@@ -568,39 +650,9 @@ var XURDLE = {};
 	mode = "nextGame?";
     }// gameOver
 
-    function drawScore()
+    function getWordInGrid(selected)  // selected is in {-1,0,...,5}
     {
-	var left, top, width;
-	//if (portrait)
-	{
-	    left = 2 + Math.floor(cWidth / 2 - 2.5*cw);	
-	    top = 0;
-	    width = 5*rh-2;
-	    height = 0.9*rh;
-	}
-	if (mainCanvas.getContext)
-	{
-	    const ctx = mainCanvas.getContext("2d");
-
-	    ctx.beginPath(); // erase old one
-	    ctx.fillStyle = bkgColor;
-	    //ctx.fillStyle = 'red';
-	    ctx.rect(left,top, width, 0.9*rh);
-	    ctx.fill();
-
-	    ctx.beginPath();
-	    ctx.textAlign = 'center';
-	    ctx.fillStyle = "black";
-	    ctx.textBaseline = 'bottom';
-	    ctx.font =  0.5*rh + 'px Arial';
-	    var text = "Score: " + totalGuesses;
-	    ctx.fillText(text,left+width/2,top+0.7*rh, width);
-	}
-    }// drawScore
-    
-    function getWordInGrid(arrow)  // arrow is the selected one in {-1,0,...,5}
-    {
-	switch (arrow)
+	switch (selected)
 	{
 	    case -1:
 	    return [ grid[0][0], grid[1][1], grid[2][2], grid[3][3],
@@ -608,7 +660,7 @@ var XURDLE = {};
 	    case 5:
 	    return [ grid[4][0], grid[3][1], grid[2][2], grid[1][3],
 		     grid[0][4] ];
-	    default: return grid[arrow];
+	    default: return grid[selected];
 	}
     }// getWordInGrid
 
@@ -639,7 +691,7 @@ var XURDLE = {};
 	    words[hi & 4095],  words[(low >>> 12)], words[low & 4095]];
     }// decode
 
-    function drawGrid()
+    function styleGrid()
     {
 	var unselected = 'rgb(220,220,250)';
 	var selected = 'white';	
@@ -672,7 +724,7 @@ var XURDLE = {};
 	    document.getElementById(id).style.background = selected;
 	    break;
 	}
-    }//  drawGrid
+    }//  styleGrid
 
     // end of code
 

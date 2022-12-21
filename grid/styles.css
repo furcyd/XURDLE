@@ -60,13 +60,42 @@ div {
     height: 2px;
     nmargin-bottom: 10px;
 }
-.grid-left {
+#grid-left {
     grid-column: 1 / 2;
     grid-row: 3 / 4;
     text-align: center;
     font-weight: bold;
-    display: inline-block;
+    display: table;
+}
+
+#grid-left-middle {
+    display: table-cell;
     vertical-align: middle;
+}
+
+#grid-right {
+    grid-column: 3 / 4;
+    grid-row: 3 / 4;
+    text-align: center;
+    font-weight: bold;
+    display: table;
+}
+
+#grid-right-middle {
+    display: table-cell;
+    vertical-align: middle;
+    font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 24px;
+    color: blue;
+}
+
+#grid-table {
+    display: table;
+}
+
+#grid-cell {
+    display: table-cell;
+    vertical-align: middle;    
 }
 
 #grid {
@@ -77,19 +106,58 @@ div {
     aspect-ratio: 1/1;
 }
 
-.grid-right {
-    grid-column: 3 / 4;
-    grid-row: 3 / 4;
-}
-
-.guess-left {
+#guess-left {
     grid-column: 1 / 2;
     grid-row: 4 / 5;
+    text-align: center;
+    font-weight: bold;
+    display: table;
 }
 
-.guess {
+#guess-left-middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
+#guess-table {
+    display: table;
+}
+
+#guess-cell {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+#guess-right {
+    grid-column: 3 / 4;
+    grid-row: 4 / 5;
+    text-align: center;
+    font-weight: bold;
+    display: table;
+}
+
+#guess-right-middle {
+    display: table-cell;
+    vertical-align: middle;
+
+}
+
+#guess-right-middle-span {
+    display: none;
+    border: 1px black solid;
+    border-radius: 10px;
+    background: red;
+    color: white;
+    padding: 5px;
+}
+
+#guess {
     grid-column: 2 / 3;
     grid-row: 4 / 5;
+    display: grid;
+    grid-template-rows: repeat(6,1fr);
+    gap: 0px;
 }
 
 #keyboard {
@@ -123,6 +191,23 @@ div {
     aspect-ratio: 1/1;
 }
 
+
+.gcell {
+    display: table;
+    border: black 1px dotted;
+    aspect-ratio: 1/1;
+    text-align: center;
+    font-weight: 700;
+    vertical-align: middle;
+}
+
+.grow {
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    gap: 2px;
+}
+
+
 #grid_0_0, #grid_1_1,#grid_2_2,#grid_3_3,#grid_4_4,#grid_4_0,#grid_3_1,
 #grid_1_3,#grid_0_4 {
     border: 3px red solid;
@@ -155,10 +240,12 @@ button {
 
 #upBtn {
     cursor: n-resize;
+    min-height: 40px;
 }
 
 #downBtn {
     cursor: s-resize;
+    min-height: 40px;
 }
 
 

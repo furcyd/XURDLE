@@ -549,78 +549,78 @@ var XURDLE = {};
 	    if (event.stopPropagation)
 		event.stopPropagation();
 	    redraw();
-	    }
-	    if (mode === "guess")
+	}
+	if (mode === "guess")
+	{
+	    if (code === 13) // return/enter key
 	    {
-		if (code === 13) // return/enter key
+		if (charIndex === 5)  // complete guess
 		{
-		    if (charIndex === 5)  // complete guess
+		    var guess = guesses[guessNumber].join("");
+		    if (validGuesses.indexOf(guess.toLowerCase()) < 0 &&
+			words.indexOf(guess.toLowerCase()) < 0)
+		    {  // not a dictionary word			     			 
+			notInWordList();
+			setTimeout(function()
+				   {
+				       redraw();
+				   }, 1000);
+		    } else // valid guess
 		    {
-			var guess = guesses[guessNumber].join("");
-			if (validGuesses.indexOf(guess.toLowerCase()) < 0 &&
-			    words.indexOf(guess.toLowerCase()) < 0)
-			{  // not a dictionary word			     			 
-			    notInWordList();
-			    setTimeout(function()
-				       {
-					   redraw();
-				       }, 1000);
-			} else // valid guess
+			var correctGuess = score(guesses[guessNumber]);
+			totalGuesses++;
+			if (correctGuess || guessNumber === 5)
 			{
-			    var correctGuess = score(guesses[guessNumber]);
-			    totalGuesses++;
-			    if (correctGuess || guessNumber === 5)
-			    {
-				if (guessNumber === 5) // ran out of guesses
-				    totalGuesses++;  // 1 penalty point
+			    if (guessNumber === 5) // ran out of guesses
+				totalGuesses++;  // 1 penalty point
 				updateWordInGrid();
-				wordFound[selectedArrow] = 1;
-				if (0 <= selectedArrow &&  // if not a
-				    selectedArrow <= 4)    // diagonal
-				{
-				    //check one diagonal ...
-				    var count = 0;
-				    for( var i = 0; i < 5; i++ )
-					count += reveal[i][i];
-				    if (count === 5)
+			    wordFound[selectedArrow] = 1;
+			    if (0 <= selectedArrow &&  // if not a
+				selectedArrow <= 4)    // diagonal
+			    {
+				//check one diagonal ...
+				var count = 0;
+				for( var i = 0; i < 5; i++ )
+				    count += reveal[i][i];
+				if (count === 5)
 					wordFound[-1] = 1;
-
-				    // ... and the other
-				    count = 0;
-				    for( var i = 0; i < 5; i++ )
-					count += reveal[4-i][i];
-				    if (count === 5)
-					wordFound[5] = 1;			
-				}
-				guessNumber = 0;
-				gStyles = [ ["","","","",""],["","","","",""],
-					    ["","","","",""],["","","","",""],
-					    ["","","","",""],["","","","",""]];
-				guesses = [ ["","","","",""],["","","","",""],
-					    ["","","","",""],["","","","",""],
-					    ["","","","",""],["","","","",""]];
-				selectedArrow = -1;
-				while (selectedArrow < 6 &&
-				       wordFound[selectedArrow] === 1)
-				    selectedArrow++;
-				if (selectedArrow === 6)
-				{
-				    
-				    gameOver();
-				    return;
-				} else
-				{
-				    mode = "grid";
-				}
+				
+				// ... and the other
+				count = 0;
+				for( var i = 0; i < 5; i++ )
+				    count += reveal[4-i][i];
+				if (count === 5)
+				    wordFound[5] = 1;			
+			    }
+			    guessNumber = 0;
+			    gStyles = [ ["","","","",""],["","","","",""],
+					["","","","",""],["","","","",""],
+					["","","","",""],["","","","",""]];
+			    guesses = [ ["","","","",""],["","","","",""],
+					["","","","",""],["","","","",""],
+					["","","","",""],["","","","",""]];
+			    selectedArrow = -1;
+			    while (selectedArrow < 6 &&
+				   wordFound[selectedArrow] === 1)
+				selectedArrow++;
+			    if (selectedArrow === 6)
+			    {
+				
+				gameOver();
+				return;
 			    } else
 			    {
-				guessNumber++;
+				mode = "grid";
 			    }
-			    charIndex = 0;
-			    redraw();
+			} else
+			{
+			    guessNumber++;
 			}
-		    }
-		} else if (code >= 65 && code <= 90) // letter key
+			charIndex = 0;
+			redraw();
+			}
+		}
+	    } else if (code >= 65 && code <= 90) // letter key
 		{
 		    if (charIndex < 5)
 		    {
