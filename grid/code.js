@@ -91,6 +91,10 @@ var XURDLE = {};
 		{
 		    cell.style.border = "black 1px solid";
 		}
+		else
+		{
+		    cell.style.border = "black 1px dotted";
+		}
 	    }
 	}
 
@@ -248,7 +252,7 @@ var XURDLE = {};
     function initDataStructures()
     {
 	selectedRow = -1;
-	guessNumber = 0;
+	guessNumber = -1;
 	charIndex = 0;
 	totalGuesses = 0;
 	guesses = [ ["","","","",""],["","","","",""],["","","","",""],
@@ -466,10 +470,11 @@ var XURDLE = {};
 	    {
 		/*** switch to guess mode ***/
 		mode = "guess";
+		guessNumber = 0;
 		hideGridLeft();
 		showGuessLeft();	
 		correct = getWordInGrid(selectedRow);
-		console.log(correct);
+		//console.log(correct);
 	    }
 	    if (event.stopPropagation)
 		event.stopPropagation();
@@ -525,7 +530,7 @@ var XURDLE = {};
 				if (count === 5)
 				    wordFound[5] = 1;			
 			    }
-			    guessNumber = 0;
+			    guessNumber = -1;
 			    gStyles = [ ["","","","",""],["","","","",""],
 					["","","","",""],["","","","",""],
 					["","","","",""],["","","","",""]];
@@ -537,13 +542,20 @@ var XURDLE = {};
 				   wordFound[selectedRow] === 1)
 				selectedRow++;
 			    if (selectedRow === 6)
-			    {				
+			    {
+				selectedRow = -1; // default value
+				hideGridLeft();
+				hideGuessLeft();				
 				gameOver();
 				return;
 				} else
 			    {
 				/**** go back to grid mode *****/
 				mode = "grid";
+				guessNumber = -1;
+				showGridLeft();
+				hideGuessLeft();
+
 			    }
 			} else
 			{
@@ -588,24 +600,27 @@ var XURDLE = {};
 
 	// check for green letters first
 	for(var i = 0; i < 5; i++) // loop on letters of the guess
-	    if (guess[i] == answer[i])  // is it in the correct position
+	    if (guess[i] === answer[i])  // is it in the correct position
 	    {
 		answer[i] = '*'; // letter cannot be used in scoring any longer
 		gStyles[guessNumber][i] = 'g'; // green
 		numCorrectLetters++;
 	    }
+	//console.log( "score = " + gStyles[guessNumber]);
 	for(var i = 0; i < 5; i++) // loop on letters of the guess
 	{
-	    // check if c is in the answer but at another location
-	    for(var j = 0; j < 5; j++)  // loop on the letters of the answer
-		if (answer[j] === guess[i])
-	        {
-		    answer[j] = '*'; // letter is now used up for scoring
-		    gStyles[guessNumber][i] = 'y'; // yellow
-		    break;
-		}
+	    if (answer[i] !== '*') // letter not already accounted for
+	    {
+		// check if c is in the answer but at another location
+		for(var j = 0; j < 5; j++)  // loop on the letters of the answer
+		    if (answer[j] === guess[i])
+	            {
+			answer[j] = '*'; // letter is now used up for scoring
+			gStyles[guessNumber][i] = 'y'; // yellow
+			break;
+		    }
+	    }
 	}
-	//console.log( "score = " + gStyles[guessNumber]);
 	return numCorrectLetters === 5;
     }// score
     
@@ -616,7 +631,7 @@ var XURDLE = {};
 	span.innerHTML =
 	    "The word you guessed is not in the accepted word list.";
     }// notInWordList()
-
+ 
     function gameOver()
     {
 	saveToLS("numPlayed", 1 + getFromLS("numPlayed"));
@@ -625,28 +640,13 @@ var XURDLE = {};
 	saveToLS("min", Math.min(totalGuesses, getFromLS("min")));
 	saveToLS("max", Math.max(totalGuesses, getFromLS("max"))); 	
 	
-	if (mainCanvas.getContext)
-	{
-            const ctx = mainCanvas.getContext("2d");
-	    var x = left+5*cw+20+gw/2, y = top + 0.5*gw;
-	    restyle();
-	    ctx.beginPath();
-	    ctx.fillStyle = 'green';
-	    ctx.rect(x,y,4*(gw+sp),5*(gw+sp));
-	    ctx.fill();
-	    drawLetter(ctx,"Game over!",
-		       x + 2*(gw+sp),y + gw,5*(gw+sp),0.5*gw,
-		       'white');
-	    drawLetter(ctx,"Score: " + totalGuesses,
-		       x + 2*(gw+sp),y + 2*gw,5*(gw+sp),0.5*gw,
-		       'white');
-	    drawLetter(ctx,"Press any key",
-		       x + 2*(gw+sp),y + 4*gw,5*(gw+sp),0.5*gw,
-		       'white');
-	    drawLetter(ctx,"to play again.",
-		       x + 2*(gw+sp),y + 4.5*gw,5*(gw+sp),0.5*gw,
-		       'white');	    	    	    
-	}
+	restyle();
+
+	var span = document.getElementById("guess-right-middle-span");
+	span.style.display = "inline-block";
+	span.innerHTML =
+	    "Game over!<br /><br/>Score<br />" + totalGuesses + 
+	    "<br /><br />Press any key to play again.";
 	mode = "nextGame?";
     }// gameOver
 
@@ -698,12 +698,21 @@ var XURDLE = {};
 	var id;
 	for(var row = 0; row < 5; row++)
 	{
-	    for(var i = 0; i < 5; i++)
-		document.getElementById("grid_" + row + "_" + i)
-		.style.background = unselected;
+	    for(var col = 0; col < 5; col++)
+	    {
+		var gLetterHeight = Math.floor(getComputedStyle(
+		    document.getElementById("grid_0_0")).height.slice(0,-2));
+		var fontSize = Math.floor(gLetterHeight-5) +"px";
+		var cell =  document.getElementById("grid_" + row + "_" + col);
+		cell.style.font = "600 " + fontSize + " Arial";
+		cell.style.background = unselected;
+		if (reveal[row][col])		    
+		    cell.innerHTML = grid[row][col].toUpperCase();
+		else
+		    cell.innerHTML = "";
+	    }
 	}
 	id = "row" + selectedRow;
-	
 	switch (selectedRow)
 	{
 	    case -1:
