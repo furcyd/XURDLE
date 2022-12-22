@@ -29,7 +29,12 @@ var XURDLE = {};
 		 [ "A", "S", "D", "F", "G", "H", "J", "K", "L",],
 		 [ "ENTER", "Z", "X", "C", "V", "B", "N", "M", "b"] ];
     var gLetterHeight;
-    
+    var yellow = '#cebb58';
+    var green = '#6aaa64';
+    var letterColor =
+	[ "","","","","","","","","","","","","",
+	  "","","","","","","","","","","","",""];
+
     function getFromLS(key)
     {
 	return JSON.parse(window.localStorage.getItem(key));
@@ -53,17 +58,42 @@ var XURDLE = {};
 	styleGrid();
 	updateScore();	
 	styleGuesses();
-	/*
-	drawScore();
-	*/
+	styleKeyboard();
     }
 
+    function styleKeyboard()    // set background color of each key
+    {
+	if (mode === "guess")
+	{
+	    for( var ascii = 65; ascii <= 90; ascii++ )
+	    {
+		var char = String.fromCharCode(ascii);
+		var key = document.getElementById(char);
+		switch (letterColor[ascii-65])
+		{
+		    case "g":
+		    key.style.background = green;
+		    break;
+		    case "y":
+		    key.style.background = yellow;
+		    break;
+		    case "d":
+		    key.style.background = 'darkgray';
+		    break;
+		    default:
+		    key.style.background = 'lightgray';
+		    break;
+		}
+	    }
+	}
+    }
+    
     function styleGuesses()
     {
 	gLetterHeight = Math.floor(getComputedStyle(
-	    document.getElementById("guess_0_0")).height.slice(0,-2));
+            document.getElementById("guess_0_0")).height.slice(0,-2));
 	var fontSize = Math.floor(gLetterHeight-5) +"px";
-	
+       
 	for( var r = 0; r < 6; r++)
 	{
 	    for(var c = 0; c < 5; c++)	   
@@ -74,18 +104,21 @@ var XURDLE = {};
 		switch (gStyles[r][c])
 		{   //******** cell background ****************
 		    case "g":		   
-		    cell.style.background = '#6aaa64'; // green
+		    cell.style.background = green; // green
 		    break;
 		    case "y":
-		    cell.style.background = '#cebb58'; // yellow
+		    cell.style.background = yellow; // yellow
 		    break;
 		    default:
-		    cell.style.background = 'white';
+		    if (mode === "grid" || r >= guessNumber)
+			cell.style.background = 'white';
+		    else
+			cell.style.background = 'darkgray';		    
 		    break;		    
 		}
 		//******** cell letter ****************
 		cell.innerHTML = guesses[r][c];
-
+		
 		//******** cell border ****************
 		if (mode === "guess" && r <= guessNumber)
 		{
@@ -97,12 +130,12 @@ var XURDLE = {};
 		}
 	    }
 	}
-
+	
 	// empty out guess-right cell
 	//document.getElementById("guess-right-middle-span").innerHTML = "";
 	document.getElementById("guess-right-middle-span")
 	    .style.display = "none";
-
+	
     }
     
     function handleClick(e)
@@ -220,6 +253,7 @@ var XURDLE = {};
 		    bt.style.setProperty("grid-row","2 / 4");
 		    bt.innerHTML = "D<br />E<br />L<br />E<br />T<br />E";
 		}
+		bt.style.background = 'lightgray';
 		kb.appendChild(bt);
 	    }
 	    
@@ -255,6 +289,9 @@ var XURDLE = {};
 	guessNumber = -1;
 	charIndex = 0;
 	totalGuesses = 0;
+	letterColor =
+	    [ "","","","","","","","","","","","","",
+	      "","","","","","","","","","","","",""];
 	guesses = [ ["","","","",""],["","","","",""],["","","","",""],
 		    ["","","","",""],["","","","",""],["","","","",""]];
 	gStyles = [ ["","","","",""],["","","","",""],["","","","",""],
@@ -517,14 +554,14 @@ var XURDLE = {};
 				selectedRow <= 4)    // diagonal
 			    {
 				//check one diagonal ...
-				    var count = 0;
+				var count = 0;
 				for( var i = 0; i < 5; i++ )
 				    count += reveal[i][i];
 				if (count === 5)
 				    wordFound[-1] = 1;
 				
 				// ... and the other
-				    count = 0;
+				count = 0;
 				for( var i = 0; i < 5; i++ )
 				    count += reveal[4-i][i];
 				if (count === 5)
@@ -537,7 +574,11 @@ var XURDLE = {};
 			    guesses = [ ["","","","",""],["","","","",""],
 					["","","","",""],["","","","",""],
 					["","","","",""],["","","","",""]];
-				selectedRow = -1;
+			    letterColor =
+				[ "","","","","","","","","","","","","",
+				  "","","","","","","","","","","","",""];
+			    
+			    selectedRow = -1;
 			    while (selectedRow < 6 &&
 				   wordFound[selectedRow] === 1)
 				selectedRow++;
@@ -555,7 +596,9 @@ var XURDLE = {};
 				guessNumber = -1;
 				showGridLeft();
 				hideGuessLeft();
-
+				letterColor =
+				    [ "","","","","","","","","","","","","",
+				      "","","","","","","","","","","","",""];
 			    }
 			} else
 			{
@@ -589,12 +632,16 @@ var XURDLE = {};
     };
 
  
-    function score(guess)
+    function score(inputGuess)
     {
 	var numCorrectLetters = 0;
 	var answer = [];
+	var guess = [];
 	for(var i = 0; i < 5; i++)
+	{
 	    answer.push(correct[i].toUpperCase());
+	    guess.push(inputGuess[i]);
+	}
 	//console.log( "answer = " + answer);
 	//console.log( "guess  = " + guess);
 
@@ -604,12 +651,16 @@ var XURDLE = {};
 	    {
 		answer[i] = '*'; // letter cannot be used in scoring any longer
 		gStyles[guessNumber][i] = 'g'; // green
+		var c = guess[i].charCodeAt(0) - 65;
+		letterColor[c] = "g";
+		guess[i] = '*';
 		numCorrectLetters++;
-	    }
+		
+	    }	
 	//console.log( "score = " + gStyles[guessNumber]);
 	for(var i = 0; i < 5; i++) // loop on letters of the guess
 	{
-	    if (answer[i] !== '*') // letter not already accounted for
+	    if (guess[i] !== '*') // letter already scored as green
 	    {
 		// check if c is in the answer but at another location
 		for(var j = 0; j < 5; j++)  // loop on the letters of the answer
@@ -617,10 +668,16 @@ var XURDLE = {};
 	            {
 			answer[j] = '*'; // letter is now used up for scoring
 			gStyles[guessNumber][i] = 'y'; // yellow
+			var c = guess[i].charCodeAt(0) - 65;
+			if (letterColor[c] !== "g")
+			    letterColor[c] = "y";
 			break;
 		    }
 	    }
 	}
+	for( var i = 0; i < 5; i++)
+	    if ( letterColor[guess[i].charCodeAt(0) - 65] === "")
+		letterColor[guess[i].charCodeAt(0) - 65] = "d"; // darkgray
 	return numCorrectLetters === 5;
     }// score
     
