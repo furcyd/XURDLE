@@ -573,8 +573,9 @@ var XURDLE = {};
 		    drawText(ctx,s+"", mid+1.3*h, y, 2*h, h, 'RoyalBlue',0,
 			     'right');
 		    // bar
-		    l = (max === 0 || val === 0) ? 2 : (mid-50)*val/max;
-		    ctx.fillStyle = 'gray';	
+		    l = ( max === 0 || val === 0) ? 2 : (mid-50)*val / maxVal;
+		    ctx.fillStyle = 'gray';
+		    ctx.rect(mid-1.3*h-l-4,y-(h+2)/2-2,l,h+2);
 		    ctx.rect(mid+1.3*h+4,y-(h+2)/2-2,l,h+2);
 		    ctx.fill();
 		    // number in bar
