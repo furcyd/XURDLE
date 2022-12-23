@@ -237,8 +237,33 @@ button {
 }
 
 
-#helpDivButton {
+#helpButton {
     cursor: help;
+}
+
+#statsButton {
+}
+
+#statsDiv {
+    display: none;
+    border: black 1px solid;
+}
+
+#closeStats {
+    margin: 5px;
+    padding: 0;
+}
+
+#statsDiv p {
+    height: 30px;
+    text-align: center;
+    font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    padding: 0;
+    padding-top: 5px;
+    margin: 0;
+    margin-left: 30px;
 }
 
 #upBtn {

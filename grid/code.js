@@ -3,10 +3,10 @@ var XURDLE = {};
 (function() {
     "use strict";
 
-    var container, helpDiv, statsDiv, currentTab;
+    var container, helpDiv, statsDiv, canvas, currentTab;
     var	gridLeftContent = "Select a row or diagonal to guess next. <button id=\"upBtn\" class=\"icon\"><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"20\" viewBox=\"0 0 20 20\" width=\"20\"> <polygon points=\"10,5 18,18 2,18\" style=\"fill:black;stroke:black;stroke-width:1\" /> </svg> </button><br /> <button id=\"downBtn\" class=\"icon\"> <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"20\" viewBox=\"0 0 20 20\" width=\"20\"> <polygon points=\"10,18 18,5 2,5\" style=\"fill:black;stroke:black;stroke-width:1\" /> </svg> </button>";
 
-    var gameWidth;
+    var gameWidth, gameHeight;
     var problemNumber;
     var mode;
     
@@ -51,6 +51,35 @@ var XURDLE = {};
 	div.innerHTML = "Score<br />" + totalGuesses;
     }
     
+    /*******************************************************************/
+
+        /******************************************************************
+            This code, from: https://stackoverflow.com/a/15666143
+            increases the resolution of canvas drawing by passing
+            a integer larger than one for ratio in createHiDPICanvas
+          (see init() and drawStats() for the two canvases in this app)
+    *******************************************************************/
+    var PIXEL_RATIO = (function () {
+    var ctx = document.createElement("canvas").getContext("2d"),
+        dpr = window.devicePixelRatio || 1,
+        bsr = ctx.webkitBackingStorePixelRatio ||
+        ctx.mozBackingStorePixelRatio ||
+        ctx.msBackingStorePixelRatio ||
+        ctx.oBackingStorePixelRatio ||
+        ctx.backingStorePixelRatio || 1;
+	
+	return dpr / bsr;
+    })();
+    var createHiDPICanvas = function(w, h, ratio) {
+	if (!ratio) { ratio = PIXEL_RATIO; }
+	var can = document.createElement("canvas");
+	can.width = w * ratio;
+	can.height = h * ratio;
+	can.style.width = w + "px";
+	can.style.height = h + "px";
+	can.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
+	    return can;
+    }
     /*******************************************************************/
 
     function restyle()
@@ -201,6 +230,11 @@ var XURDLE = {};
 
 	gameWidth = getComputedStyle(
 	    document.getElementById("keyboard")).width.slice(0,-2);
+
+	gameHeight =
+	    window.innerHeight   
+	    || document.documentElement.clientHeight
+	    || document.body.clientHeight;
     }
 
     function styleHelp()
@@ -210,12 +244,10 @@ var XURDLE = {};
 	//	helpDiv.style.width = window.innerWidth + "px";
 	//helpDiv.style.width = "100vw";
     }
-    
+
     function init()
     {
 	mode = "grid";
-	showGridLeft();
-	hideGuessLeft();	
 	window.addEventListener('resize', appHeight);
 	appHeight();
 	document.addEventListener('keydown', handleKeyDown);
@@ -225,6 +257,10 @@ var XURDLE = {};
 	    container = document.getElementById("container");
 	    helpDiv = document.getElementById("helpDiv");
 	    statsDiv = document.getElementById("statsDiv");
+
+	    showGridLeft();
+	    hideGuessLeft();	
+
 	    var bt = document.getElementById("upBtn");
 	    bt.addEventListener('click', handleClick);
 	    bt = document.getElementById("downBtn");
@@ -260,6 +296,12 @@ var XURDLE = {};
 	}
 	currentTab = container;
 	styleContainer();
+
+	canvas = createHiDPICanvas(gameWidth,
+				   gameHeight-60,4); // hi resolution!
+	canvas.setAttribute("id","canvas");
+	statsDiv.appendChild( canvas );
+
 	styleHelp();	
 
 	// is local storage empty?
@@ -350,16 +392,16 @@ var XURDLE = {};
     function hideHelp()
     {
 	helpDiv.style.display = "none";
-	container.style.display = "block";
+	container.style.display = "grid";
 	styleContainer();
-
 	currentTab = container;
     }
 
     function showStats()
     {
-	mainCanvas.style.display = "none";
-	help.style.display = "none";
+	statsDiv.style.width = gameWidth + "px";
+	statsDiv.style.margin = "auto";	
+	container.style.display = "none";
 	drawStats();
 	statsDiv.style.display = "block";
 	currentTab = stats;
@@ -367,32 +409,68 @@ var XURDLE = {};
 
     function hideStats()
     {
-	mainCanvas.style.display = "block";
+	container.style.display = "grid";
 	statsDiv.style.display = "none";
-	help.style.display = "none";	
-	currentTab = mainCanvas;
+	currentTab = container;
     }
+
+    function myRoundRect(ctx,left, top, w, h, r,fill)
+    {
+	ctx.beginPath();
+	if (ctx.roundRect)
+	{
+	    ctx.roundRect(left, top, w, h, r);
+	}
+	else
+	{
+	    ctx.moveTo(left+r, top);
+	    ctx.lineTo(left+w-r,top);
+	    ctx.arc(left+w-r, top+r, r, 3*pi/2, 2*pi);
+	    ctx.lineTo(left+w,top+h-r);
+	    ctx.arc(left+w-r, top+h-r, r, 0, pi/2);
+	    ctx.lineTo(left+r,top+h);
+	    ctx.arc(left+r, top+h-r, r, pi/2, pi);
+	    ctx.lineTo(left,top+r);
+	    ctx.arc(left+r, top+r, r, pi, 3*pi/2);
+	}
+	ctx.stroke();
+	if (fill)
+	    ctx.fill();
+    }
+
+    function drawText(ctx,t,x,y,w,h,color,bold,align)
+    {
+	ctx.beginPath();
+	ctx.textAlign = align;
+	ctx.fillStyle = color;
+	ctx.font = (bold ? '600 ' : '') + h + 'px Arial';
+	ctx.fillText(t,x,y,0.8*w)
+    }// drawText
 
     function drawStats()
     {
-	var canvas = statsCanvas;
-	
-	var mid = width / 2;
-	var h = 13;  // font size
-
+	function computeMax()
+	{
+	    var result = 0;
+	    for (var i = 5; i <= 49; i++)
+		result = Math.max(result,getFromLS(i));
+	    return result;
+	}
+	var top;
 	var cw = canvas.style.width.slice(0,-2);  // canvas width
 	var ch = canvas.style.height.slice(0,-2); // canvas height
+	console.log( cw );
+	var mid = cw / 2;
+	var h = 15;  // font size
+
 	if (canvas.getContext)
 	{
             const ctx = canvas.getContext("2d");
 	    
-	    ctx.beginPath();
+	    ctx.beginPath();  // erase old canvas
 	    ctx.fillStyle = 'white';
-	    ctx.strokeStyle = 'black';
-	    ctx.lineWidth = 1;
-	    ctx.rect(1,1,cw- 2,ch-2);
+	    ctx.rect(0,0,cw,ch);
 	    ctx.fill();
-	    ctx.stroke();
 
 	    var numPlayed = getFromLS("numPlayed");
 	    var max = getFromLS("max");
@@ -400,67 +478,121 @@ var XURDLE = {};
 	    var sum = getFromLS("sum");
 	    var avg = numPlayed === 0 ? "N/A" : 
 		(Math.round(100*(sum/numPlayed))/100);
-	    var numPlayed = getFromLS("");
-	    var numPlayed = getFromLS("");
-	    // write summary stats
-	    drawLetter(ctx,
-		       "Games played: " + getFromLS("numPlayed") +
-		       " - Scores: min = " + min + ", avg =  " + avg
-		       + ", max = " + max,
-		       mid, h+20, width, h+5, 'green',0,'center');
 
+	    // "Games played"
+	    ctx.beginPath();
+	    ctx.textAlign = 'center';
+	    ctx.font = '600 ' + h + 'px Arial';
+	    ctx.fillStyle = 'RoyalBlue';
+	    ctx.fillText( "Games played: " + numPlayed, mid, h);
+
+	    // "scores"
+	    top = h + 20;
+	    var str = "min: " + min + "         avg: " + avg
+		+ "         max: " + max;
+	    var w = ctx.measureText(str).width;
+	    //console.log(gameWidth + " " + w);
+	    
+	    ctx.beginPath();  // score border rectangle
+	    ctx.lineWidth = 2;
+	    ctx.strokeStyle = 'RoyalBlue';
+	    var w2 = Math.min(w+20,gameWidth-10);
+	    myRoundRect(ctx,mid-w2/2, top, w2, h+20,5,false);
+	    ctx.stroke();
+	    
+	    ctx.beginPath();  // scores" header box
+	    var w = ctx.measureText("Scores").width;
+	    ctx.fillStyle = 'RoyalBlue';
+	    myRoundRect(ctx,mid-w/2, top-h/2, w, h,5,true);
+	    ctx.fill();
+	    ctx.beginPath();
+	    ctx.font = '200 ' + (0.8*h) + 'px Arial';
+	    ctx.fillStyle = 'white';
+	    ctx.textBaseline = 'middle';
+	    ctx.fillText( "scores", mid, top);
+
+	    ctx.beginPath();  // score values
+	    ctx.font = '600 ' + h + 'px Arial';
+	    ctx.fillStyle = 'RoyalBlue';
+	    ctx.textBaseline = 'middle';
+	    ctx.fillText( str, mid, top + (h+20)/2 + h/4, gameWidth - 30);
+
+	    top += h + 30;
+	    /*
+	    ctx.beginPath();  // score distrib. border rectangle
+	    ctx.lineWidth = 1;
+	    ctx.strokeStyle = 'RoyalBlue';
+	    myRoundRect(ctx,5, top, cw-10, ch - top,10,false);
+	    ctx.stroke();
+	    */
+	    // "Score distribution"
+	    ctx.beginPath();
+	    ctx.textAlign = 'center';
+	    ctx.font = 'italic small-caps 700 ' + h + 'px Arial';
+	    ctx.fontStyle = 'italic';
+	    ctx.fillStyle = 'RoyalBlue';
+	    ctx.fillText( "Score Distribution", mid, top+h);
+
+	    var maxVal = computeMax();
 	    var l; // bar length
-	    var y = height - 10;
+	    var y = ch-h;
+	    h = (ch-top-4*25)/25;
+
+	    console.log(localStorage);
 	    for(var s = 50; s >= 5; s -= 2)
 	    {
 		var val = getFromLS(s-1);
 		
 		// =============== left side ====================
 		// score value
-		drawLetter(ctx,(s-1)+"", mid-35, y, 25, h, 'green',0,'left');
+		drawText(ctx,(s-1)+"", mid-1.3*h, y, 2*h, h, 'RoyalBlue',0,
+			 'left');
 		// bar
-		l = ( max === 0 || val === 0) ? 2 : (mid-50)*val / max;
+		l = ( max === 0 || val === 0) ? 2 : (mid-50)*val / maxVal;
 		ctx.fillStyle = 'gray';	
-		ctx.rect(mid-35-l-2,y-h,l,h+2);
+		ctx.rect(mid-1.3*h-l-4,y-(h+2)/2-2,l,h+2);
 		ctx.fill();
 		// number in bar
+		
 		var numberFitsInBar = l > 50;
 		if (numberFitsInBar)
-		    drawLetter(ctx,val+"",
-			       mid-35-l, y-1,
+		    drawText(ctx,val+"",
+			       mid-1.3*h-l-4+2, y,
 			       50, h, 'white',1, 'left');
 		else
-		    drawLetter(ctx,val+"",
-			       mid-35-l-4, y-1,
+		    drawText(ctx,val+"",
+			       mid-1.3*h-l-4-2, y-1,
 			       50, h, 'gray',1,'right');		
 		
 		if (s < 50)
 		{
 		    val = getFromLS(s);
+		    console.log(s + " ==> " + val);
 		    // =============== right side ====================		
 		    // score value
-		    drawLetter(ctx,s+"", mid+5, y, 25, h, 'green',0,'right');
+		    drawText(ctx,s+"", mid+1.3*h, y, 2*h, h, 'RoyalBlue',0,
+			     'right');
 		    // bar
 		    l = (max === 0 || val === 0) ? 2 : (mid-50)*val/max;
 		    ctx.fillStyle = 'gray';	
-		    ctx.rect(mid+5+2,y-h,l,h+2);
+		    ctx.rect(mid+1.3*h+4,y-(h+2)/2-2,l,h+2);
 		    ctx.fill();
 		    // number in bar
 		    var numberFitsInBar = l > 50;
+		    console.log(val+"");
 		    if (numberFitsInBar)
-			drawLetter(ctx,val+"",
-				   mid+5+l, y-1,
+			drawText(ctx,val+"",
+				   mid+1.3*h+l-2, y,
 				   50, h, 'white',1, 'right');
 		    else
-			drawLetter(ctx,val+"",
-				   mid+5+l+4, y-1,
+			drawText(ctx,val+"",
+				   mid+1.3*h+l+6, y,
 				   50, h, 'gray',1,'left');		
 		}
 		// get ready for next row
 		y -= h + 4;
 	    }
 	}
-
     }// drawStats
     
     //*******************************************************************

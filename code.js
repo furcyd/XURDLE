@@ -1078,6 +1078,7 @@ var XURDLE = {};
 
     function drawLetter(ctx,l,x,y,w,h,color,bold,align)
     {
+	
 	ctx.beginPath();
 	ctx.textAlign = align ? align : 'center';
 	ctx.fillStyle = color;
