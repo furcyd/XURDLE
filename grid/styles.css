@@ -336,3 +336,8 @@ button {
 #helpDiv > #helpHeader {
     margin-top: 0px;
 }
+
+
+#keyboard button:focus {
+        outline: none;
+}

@@ -92,7 +92,7 @@ var XURDLE = {};
 
     function styleKeyboard()    // set background color of each key
     {
-	if (mode === "guess")
+	//if (mode === "guess")
 	{
 	    for( var ascii = 65; ascii <= 90; ascii++ )
 	    {
@@ -167,13 +167,11 @@ var XURDLE = {};
 	
     }
     
-    function handleClick(e)
+    function handleClick(e) 
     {
-	//const key = getKey(mainCanvas,e);
-	//console.log("key = " + key);
 	const key = e.target.id || e.target.parentNode.id
 	      || e.target.parentNode.parentNode.id;
-	//console.log("in Click: " + key);
+	console.log("in Click: " + key);
 	
 	switch(key)
 	{
@@ -181,16 +179,15 @@ var XURDLE = {};
 	    e.keyCode = 38;
 	    e.key = key;
 	    break;
-
 	    case "downBtn":
 	    e.keyCode = 40;
 	    e.key = key;
 	    break;
-	    case "ENTER":
+	    case "enterKey":
 	    e.keyCode = 13;
 	    e.key = "Enter";
 	    break;
-	    case "b":
+	    case "backspaceKey":
 	    e.keyCode = 8;
 	    e.key = "Backspace";
 	    break;
@@ -200,7 +197,7 @@ var XURDLE = {};
 	    break;
 	}
 	handleKeyDown( e );
-
+	e.target.blur(); 	// the key loses focus	
     }
 
     const appHeight = () => {
@@ -277,17 +274,17 @@ var XURDLE = {};
 		bt.id =  keys[r][c];
 		bt.addEventListener('click', handleClick);
 		bt.innerHTML = keys[r][c];
-		if ( keys[r][c] == "ENTER")
+		if ( keys[r][c] === "ENTER")
 		{
 		    bt.id = "enterKey";
 		    bt.style.setProperty("grid-column","1 / 3");		
 		}
-		if ( keys[r][c] == "b")
+		if ( keys[r][c] === "b")
 		{
-		    bt.id = "baskspaceKey";
+		    bt.id = "backspaceKey";
 		    bt.style.setProperty("grid-column","10 / 11");
 		    bt.style.setProperty("grid-row","2 / 4");
-		    bt.innerHTML = "D<br />E<br />L<br />E<br />T<br />E";
+		    bt.innerHTML = "D<br />E<br />L";// <br />E<br />T<br />E";
 		}
 		bt.style.background = 'lightgray';
 		kb.appendChild(bt);
@@ -365,6 +362,10 @@ var XURDLE = {};
 	var div = document.getElementById("grid-left-middle");
 	//div.style.display = "table";
 	div.innerHTML = gridLeftContent;
+	var bt = document.getElementById("upBtn");
+	bt.addEventListener('click', handleClick);
+	bt = document.getElementById("downBtn");
+	bt.addEventListener('click', handleClick);
     }
 
     function hideGridLeft()
@@ -615,8 +616,10 @@ var XURDLE = {};
 	var code = Number(event.keyCode);	
 	var key = event.key;
 	if (key === "ArrowDown") key = "downBtn";
-	if (key === "ArrowUp")   key = "upBtn";	
-	//console.log("here " + code + " " + key);
+	if (key === "ArrowUp")   key = "upBtn";
+	var ranOutOfGuesses = 0;
+
+	console.log("here " + code + " " + key);
 
 	if (currentTab !== container)
 	    return;
@@ -676,21 +679,32 @@ var XURDLE = {};
 			words.indexOf(guess.toLowerCase()) < 0)
 		    {
 			/********** non-existing word guessed ************/
-			notInWordList();
+			displayMessage("The word you guessed is not in the "
+				       + "accepted word list.");
 			setTimeout(function()
 				   {
-					   restyle();
+				       restyle();
 				   }, 2000);
 		    } else // valid guess
 		    {
 			/********** existing word guessed ****************/
 			var correctGuess = score(guesses[guessNumber]);
+			console.log( "correct? " + correctGuess);
 			totalGuesses++;
 			if (correctGuess || guessNumber === 5)
 			{
 			    /*** correct guess or ran out of guesses ***/
 			    if (guessNumber === 5) // ran out of guesses
-				    totalGuesses++;  // 1 penalty point
+			    {
+				totalGuesses++;  // 1 penalty point
+				console.log("ran out of guesses");
+				displayMessage("Sorry! You ran out of guesses.");
+				setTimeout(function()
+					   {
+					       restyle();
+					   }, 2000);
+				ranOutOfGuesses = 1;
+			    }
 			    updateWordInGrid();
 			    wordFound[selectedRow] = 1;
 			    if (0 <= selectedRow &&  // if not a
@@ -732,7 +746,7 @@ var XURDLE = {};
 				hideGuessLeft();				
 				gameOver();
 				return;
-				} else
+			    } else
 			    {
 				/**** go back to grid mode *****/
 				mode = "grid";
@@ -749,7 +763,8 @@ var XURDLE = {};
 			    guessNumber++;
 			}
 			charIndex = 0;
-			restyle();
+			if (! ranOutOfGuesses)
+			    restyle();
 		    }// valid guess
 		}// return key and complete guess
 	    } else if (code >= 65 && code <= 90) // letter key
@@ -761,7 +776,7 @@ var XURDLE = {};
 		    charIndex++;
 		    restyle();
 		}
-	    } else if (code === 8 || code === 46) 
+	    } else if (code === 8) 
 	    {
 		/**** backspace or delete *******/
 		if (charIndex > 0)
@@ -824,13 +839,12 @@ var XURDLE = {};
 	return numCorrectLetters === 5;
     }// score
     
-    function notInWordList()
+    function displayMessage(message)
     {
 	var span = document.getElementById("guess-right-middle-span");
 	span.style.display = "inline-block";
-	span.innerHTML =
-	    "The word you guessed is not in the accepted word list.";
-    }// notInWordList()
+	span.innerHTML = message;
+    }// displayMessage()
  
     function gameOver()
     {
