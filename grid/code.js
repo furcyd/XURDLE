@@ -257,7 +257,7 @@ var XURDLE = {};
 	    container = document.getElementById("container");
 	    helpDiv = document.getElementById("helpDiv");
 	    statsDiv = document.getElementById("statsDiv");
-
+	    
 	    showGridLeft();
 	    hideGuessLeft();	
 
@@ -291,16 +291,11 @@ var XURDLE = {};
 		}
 		bt.style.background = 'lightgray';
 		kb.appendChild(bt);
-	    }
-	    
-	}
+	    }	    
+	} // ! container
+	
 	currentTab = container;
 	styleContainer();
-
-	canvas = createHiDPICanvas(gameWidth,
-				   gameHeight-60,4); // hi resolution!
-	canvas.setAttribute("id","canvas");
-	statsDiv.appendChild( canvas );
 
 	styleHelp();	
 
@@ -321,6 +316,15 @@ var XURDLE = {};
 	    problemNumber = getFromLS("problemNumber");
 	}
 	initDataStructures();
+
+	if (! canvas)
+	{
+	    canvas = createHiDPICanvas(gameWidth,
+				       gameHeight-60,4); // hi resolution!
+	    canvas.setAttribute("id","canvas");
+	    statsDiv.appendChild( canvas );
+	}
+
 	restyle();
 	
     }// init
@@ -459,10 +463,10 @@ var XURDLE = {};
 	var top;
 	var cw = canvas.style.width.slice(0,-2);  // canvas width
 	var ch = canvas.style.height.slice(0,-2); // canvas height
-	console.log( cw );
 	var mid = cw / 2;
 	var h = 15;  // font size
 
+	
 	if (canvas.getContext)
 	{
             const ctx = canvas.getContext("2d");
@@ -518,13 +522,12 @@ var XURDLE = {};
 	    ctx.fillText( str, mid, top + (h+20)/2 + h/4, gameWidth - 30);
 
 	    top += h + 30;
-	    /*
+
 	    ctx.beginPath();  // score distrib. border rectangle
-	    ctx.lineWidth = 1;
-	    ctx.strokeStyle = 'RoyalBlue';
-	    myRoundRect(ctx,5, top, cw-10, ch - top,10,false);
-	    ctx.stroke();
-	    */
+	    ctx.fillStyle = 'white';
+	    ctx.rect(5, top, cw-10, ch - top,10);
+	    ctx.fill();
+
 	    // "Score distribution"
 	    ctx.beginPath();
 	    ctx.textAlign = 'center';
@@ -538,7 +541,7 @@ var XURDLE = {};
 	    var y = ch-h;
 	    h = (ch-top-4*25)/25;
 
-	    console.log(localStorage);
+	    //console.log(localStorage);
 	    for(var s = 50; s >= 5; s -= 2)
 	    {
 		var val = getFromLS(s-1);
@@ -567,7 +570,7 @@ var XURDLE = {};
 		if (s < 50)
 		{
 		    val = getFromLS(s);
-		    console.log(s + " ==> " + val);
+		    //console.log(s + " ==> " + val);
 		    // =============== right side ====================		
 		    // score value
 		    drawText(ctx,s+"", mid+1.3*h, y, 2*h, h, 'RoyalBlue',0,
@@ -575,12 +578,19 @@ var XURDLE = {};
 		    // bar
 		    l = ( max === 0 || val === 0) ? 2 : (mid-50)*val / maxVal;
 		    ctx.fillStyle = 'gray';
-		    ctx.rect(mid-1.3*h-l-4,y-(h+2)/2-2,l,h+2);
 		    ctx.rect(mid+1.3*h+4,y-(h+2)/2-2,l,h+2);
 		    ctx.fill();
 		    // number in bar
 		    var numberFitsInBar = l > 50;
-		    console.log(val+"");
+		    //console.log(val+"");
+		    /*
+		    if (s === 10)
+		    {
+			drawText(ctx,s + " "  + val,
+				   mid+1.3*h+l-2+50, y,
+				   50, h, 'black',1, 'right');
+
+		    } else */
 		    if (numberFitsInBar)
 			drawText(ctx,val+"",
 				   mid+1.3*h+l-2, y,
