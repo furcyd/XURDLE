@@ -171,7 +171,6 @@ var XURDLE = {};
     {
 	const key = e.target.id || e.target.parentNode.id
 	      || e.target.parentNode.parentNode.id;
-	console.log("in Click: " + key);
 	
 	switch(key)
 	{
@@ -274,6 +273,7 @@ var XURDLE = {};
 		bt.id =  keys[r][c];
 		bt.addEventListener('click', handleClick);
 		bt.innerHTML = keys[r][c];
+		bt.style.fontWeight = "600";
 		if ( keys[r][c] === "ENTER")
 		{
 		    bt.id = "enterKey";
@@ -293,6 +293,9 @@ var XURDLE = {};
 	
 	currentTab = container;
 	styleContainer();
+
+	showGridLeft();
+	hideGuessLeft();	
 
 	styleHelp();	
 
@@ -421,6 +424,7 @@ var XURDLE = {};
 
     function myRoundRect(ctx,left, top, w, h, r,fill)
     {
+	var pi = Math.PI;
 	ctx.beginPath();
 	if (ctx.roundRect)
 	{
@@ -496,7 +500,6 @@ var XURDLE = {};
 	    var str = "min: " + min + "         avg: " + avg
 		+ "         max: " + max;
 	    var w = ctx.measureText(str).width;
-	    //console.log(gameWidth + " " + w);
 	    
 	    ctx.beginPath();  // score border rectangle
 	    ctx.lineWidth = 2;
@@ -542,7 +545,6 @@ var XURDLE = {};
 	    var y = ch-h;
 	    h = (ch-top-4*25)/25;
 
-	    //console.log(localStorage);
 	    for(var s = 50; s >= 5; s -= 2)
 	    {
 		var val = getFromLS(s-1);
@@ -571,7 +573,6 @@ var XURDLE = {};
 		if (s < 50)
 		{
 		    val = getFromLS(s);
-		    //console.log(s + " ==> " + val);
 		    // =============== right side ====================		
 		    // score value
 		    drawText(ctx,s+"", mid+1.3*h, y, 2*h, h, 'RoyalBlue',0,
@@ -583,7 +584,6 @@ var XURDLE = {};
 		    ctx.fill();
 		    // number in bar
 		    var numberFitsInBar = l > 50;
-		    //console.log(val+"");
 		    /*
 		    if (s === 10)
 		    {
@@ -613,6 +613,14 @@ var XURDLE = {};
     
     function handleKeyDown(event)
     {
+	if (event.metaKey || // to avoid Meta-R or CTRl-R (to reload the page)
+	    event.ctrlKey)   // to be processed as the letter 'R' in guess mode
+	    return;
+	
+	if (currentTab !== container)
+	    return;
+
+	
 	var code = Number(event.keyCode);	
 	var key = event.key;
 	if (key === "ArrowDown") key = "downBtn";
@@ -620,10 +628,7 @@ var XURDLE = {};
 	var ranOutOfGuesses = 0;
 
 	console.log("here " + code + " " + key);
-
-	if (currentTab !== container)
-	    return;
-		
+	
 	if (mode === "nextGame?")
 	{
 	    problemNumber++;
@@ -689,7 +694,7 @@ var XURDLE = {};
 		    {
 			/********** existing word guessed ****************/
 			var correctGuess = score(guesses[guessNumber]);
-			console.log( "correct? " + correctGuess);
+			//console.log( "correct? " + correctGuess);
 			totalGuesses++;
 			if (correctGuess || guessNumber === 5)
 			{
@@ -697,7 +702,6 @@ var XURDLE = {};
 			    if (guessNumber === 5) // ran out of guesses
 			    {
 				totalGuesses++;  // 1 penalty point
-				console.log("ran out of guesses");
 				displayMessage("Sorry! You ran out of guesses.");
 				setTimeout(function()
 					   {
@@ -905,21 +909,38 @@ var XURDLE = {};
 	    words[hi & 4095],  words[(low >>> 12)], words[low & 4095]];
     }// decode
 
+    function onDiagonal(row,col)
+    {
+	return (row === col) || (4 - row === col);
+    }
     function styleGrid()
     {
 	var unselected = 'rgb(220,220,250)';
 	var selected = 'white';	
 	var id;
+	var cell;
+	var cellSize = getComputedStyle(
+	    document.getElementById("grid_0_0")).height.slice(0,-2);
+	//console.log("cell size = " +  cellSize);
 	for(var row = 0; row < 5; row++)
 	{
 	    for(var col = 0; col < 5; col++)
 	    {
-		var gLetterHeight = Math.floor(getComputedStyle(
-		    document.getElementById("grid_0_0")).height.slice(0,-2));
-		var fontSize = Math.floor(gLetterHeight-5) +"px";
-		var cell =  document.getElementById("grid_" + row + "_" + col);
+		//var gLetterHeight = Math.floor(getComputedStyle(
+		 //   document.getElementById("grid_0_0")).height.slice(0,-2));
+		var fontSize =  Math.floor(cellSize-12) + "px"; //Math.floor(gLetterHeight-5) +"px";
+		cell =  document.getElementById("grid_" + row + "_" + col);
 		cell.style.font = "600 " + fontSize + " Arial";
 		cell.style.background = unselected;
+		if (! onDiagonal(row,col))
+		{
+		    cell.style.border = unselected + " 3px solid";
+		    cell.style.borderRight = "black 1px solid";
+		    cell.style.borderLeft = "black 1px solid";
+		}
+		else
+		    cell.style.border = "red 3px solid";		
+
 		if (reveal[row][col])		    
 		    cell.innerHTML = grid[row][col].toUpperCase();
 		else
@@ -927,26 +948,45 @@ var XURDLE = {};
 	    }
 	}
 	id = "row" + selectedRow;
+
 	switch (selectedRow)
 	{
 	    case -1:
 	    for(var i = 0; i < 5; i++)
-		document.getElementById("grid_" + i + "_" + i)
-		.style.background = selected;
+	    {
+		cell = document.getElementById("grid_" + i + "_" + i);
+		cell.style.background = selected;
+		cell.style.border = "red 3px solid";
+	    }
 	    break;
+
 	    case 5:
 	    for(var i = 0; i < 5; i++)
-		document.getElementById("grid_" + (4-i) + "_" + i)
-		.style.background = selected;
+	    {
+		cell = document.getElementById("grid_" + (4-i) + "_" + i);
+		cell.style.background = selected;
+		cell.style.border = "red 3px solid";
+	    }
 	    break;
 	    default:
 	    for(var i = 0; i < 5; i++)
-		document.getElementById("grid_" + selectedRow + "_" + i)
-		.style.background = selected;
-
+	    {
+		cell = document.getElementById("grid_" + selectedRow + "_" + i);
+		cell.style.background = selected;
+		if (! onDiagonal(selectedRow,i))
+		{
+		    cell.style.border = selected + " 3px solid";
+		    cell.style.borderRight = "black 1px solid";
+		    cell.style.borderLeft = "black 1px solid";
+		} else
+		    cell.style.border = "red 3px solid";
+		    
+	    }
 	    document.getElementById(id).style.background = selected;
 	    break;
+
 	}
+
     }//  styleGrid
 
     // end of code

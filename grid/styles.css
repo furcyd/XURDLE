@@ -186,12 +186,14 @@ div {
 }
 
 .cell {
-    display: inline-block;
+    display: table-cell;
+    box-sizing: border-box;
     border: black 1px solid;
     aspect-ratio: 1/1;
     text-align: center;
     font-weight: 700;
-    vertical-align: middle;    
+    vertical-align: middle;
+    margin: 0;
 }
 
 
@@ -211,10 +213,13 @@ div {
 }
 
 
-#grid_0_0, #grid_1_1,#grid_2_2,#grid_3_3,#grid_4_4,#grid_4_0,#grid_3_1,
-#grid_1_3,#grid_0_4 {
+.red {
     border: 3px red solid;
 }
+
+//#grid_0_0, #grid_1_1,#grid_2_2,#grid_3_3,#grid_4_4,#grid_4_0,#grid_3_1,
+//#grid_1_3,#grid_0_4
+
 
 #upBtn, #downBtn {
     margin-top: 5px;
@@ -241,6 +246,11 @@ button {
     cursor: help;
 }
 
+#closeHelp {
+    height: 24px;
+}
+
+
 #statsButton {
 }
 
@@ -252,6 +262,7 @@ button {
 #closeStats {
     margin: 5px;
     padding: 0;
+    height: 24px;
 }
 
 #statsDiv p {
