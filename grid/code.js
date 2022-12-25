@@ -9,7 +9,6 @@ var XURDLE = {};
     var gameWidth, gameHeight;
     var problemNumber;
     var mode;
-    
     // "main" grid
     var selectedRow = -1;
     var grid;
@@ -259,9 +258,11 @@ var XURDLE = {};
 
 	    var bt = document.getElementById("upBtn");
 	    bt.addEventListener('click', handleClick);
+	    bt.style.marginBottom = "5px";
 	    bt = document.getElementById("downBtn");
 	    bt.addEventListener('click', handleClick);
 
+	    
 	    var r, c;
 	    // add keyboard
 	    for( r = 0; r < 3; r++)
@@ -284,7 +285,7 @@ var XURDLE = {};
 		    bt.id = "backspaceKey";
 		    bt.style.setProperty("grid-column","10 / 11");
 		    bt.style.setProperty("grid-row","2 / 4");
-		    bt.innerHTML = "D<br />E<br />L";// <br />E<br />T<br />E";
+		    bt.innerHTML = "D<br />E<br />L<br />E<br />T<br />E";// <br />E<br />T<br />E";
 		}
 		bt.style.background = 'lightgray';
 		kb.appendChild(bt);
@@ -310,6 +311,7 @@ var XURDLE = {};
 		saveToLS(s+"",0);
 	    saveToLS("problemNumber",1);
 	    problemNumber = 1;
+
 	} else
 	{   // load config from local storage
 	    //saveToLS("problemNumber",1);
@@ -345,7 +347,7 @@ var XURDLE = {};
 	wordFound = { "-1":0, 0:0, 1:0, 2:0, 3:0, 4:0, 5:0 };
 	console.log("pb# = " + problemNumber);
 	var g = decode( 2*(problemNumber - 1) );
-	console.log(g);
+	//console.log(g);
 	grid = [ ["","","","",""],
 		 ["","","","",""],
 		 ["","","","",""],
@@ -367,6 +369,7 @@ var XURDLE = {};
 	div.innerHTML = gridLeftContent;
 	var bt = document.getElementById("upBtn");
 	bt.addEventListener('click', handleClick);
+	bt.style.marginBottom = "5px";
 	bt = document.getElementById("downBtn");
 	bt.addEventListener('click', handleClick);
     }
@@ -627,11 +630,11 @@ var XURDLE = {};
 	if (key === "ArrowUp")   key = "upBtn";
 	var ranOutOfGuesses = 0;
 
-	console.log("here " + code + " " + key);
-	
 	if (mode === "nextGame?")
 	{
 	    problemNumber++;
+	    if (problemNumber > codes.length / 2)
+		problemNumber = 1;
 	    saveToLS("problemNumber",problemNumber);
 	    init();
 	} else if (mode === "grid")
