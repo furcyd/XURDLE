@@ -7,6 +7,10 @@ var TEST = {};
     var mainHome, mainScreen1, mainScreen2;
     var footerHome, footerScreen1, footerScreen2;
 
+    function getBodyHeight()
+    {
+	return 
+    }
     function showHome()
     {
 	if (! body) // when first loading the page
@@ -22,7 +26,15 @@ var TEST = {};
 	    footerScreen1 = document.getElementById("footerScreen1");
 	    footerScreen2 = document.getElementById("footerScreen2");	    
 	    body.style.width = "100vw";
-	    main.style.height = "300px";	    
+	    header.style.height = "30px";
+	    //console.log( getBodyHeight() );
+	    main.style.height = (window.innerHeight - 80) + "px"
+	    mainHome.style.height = "100%";
+	    mainScreen1.style.height = "100%";
+	    mainScreen2.style.height = "100%";	    	    
+	    footerHome.style.height = "30px";
+	    footerScreen1.style.height = "30px";
+	    footerScreen2.style.height = "30px";	    	    
 	}
 	hideScreen1();
 	hideScreen2();

@@ -6,6 +6,8 @@ body {
     padding: 0;
     margin: auto;
     width: 100vw;
+    display: grid;
+    grid-templates-row: 30px auto 30px;
 }
 
 button {
@@ -35,6 +37,9 @@ div {
     background-color: gray;
 }
 
+#mainScreen2 {
+    overflow: auto;
+}
 #footer {
     display: flex;
     width: 100%;
