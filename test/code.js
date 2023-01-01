@@ -21,7 +21,7 @@ var TEST = {};
 	    footerHome = document.getElementById("footerHome");
 	    footerScreen1 = document.getElementById("footerScreen1");
 	    footerScreen2 = document.getElementById("footerScreen2");	    
-	    body.style.width = "250px";
+	    body.style.width = "100vw";
 	    main.style.height = "300px";	    
 	}
 	hideScreen1();
