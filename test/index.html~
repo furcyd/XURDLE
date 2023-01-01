@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Biscuit Slider Puzzle</title>
+    <link rel="stylesheet" href="styles.css">
+     <script src="./code.js"></script> 
+  </head>
+  <body onload="BSP.showHome();">
+  <body>
+    <div id="header">
+      <img id="lines" src="./pics/lines.png"
+	   style="height: 15px; display: block"/>
+      <div id="name">
+	<span class="slantedLeft20">Biscuit</span>
+	<span class="slantedLeft25">S</span>
+	<span class="slantedLeft25">l</span>
+	<span class="slantedLeft30">i</span>
+	<span class="slantedLeft35">d</span>
+	<span class="slantedLeft40">e</span>
+	<span class="slantedLeft45">r</span>
+      </div>
+
+    </div>
+    <div id="container">
+    </div>
+    <div id="home">
+      <div class="homeHeader">
+	      <div id="stick">&#127954;</div>
+	      <div>Welcome and<br /> happy slidin'</div>
+	      <img id="biscuit" src="./pics/biscuit.png"
+		   style="display: block"/>
+      </div>
+      <div id="levelBtns">
+	<button id="Blevel"  class="level" onclick="BSP.showBlevel();">
+	  <span class="puzzleLevel">B puzzles</span><br />
+	  <span class="puzzleAcronym">[<span class="puzzleLevel">B</span>eginner puzzles]</span>
+      </button>
+	<br />
+	<button id="Alevel" class="level" onclick="BSP.showAlevel();">
+	  <span class="puzzleLevel">A puzzles</span><br />
+	  <span class="puzzleAcronym">[<span class="puzzleLevel">A</span>dvanced puzzles]</span>
+	</button>
+	<br />
+	<button id="AAlevel"  class="level" onclick="BSP.showAAlevel();">
+	  <span class="puzzleLevel">AA puzzles</span><br />
+	  <span class="puzzleAcronym">[<span class="puzzleLevel">A</span>mazingly <span class="puzzleLevel">A</span>dvanced
+	      puzzles]<span>
+	</button>
+	<br />
+	<button id="AAAlevel"  class="level" onclick="BSP.showAAAlevel();">
+	  <span class="puzzleLevel">AAA puzzles</span><br />	  
+	  <span class="puzzleAcronym">[<span class="puzzleLevel">A</span>bsolutely <span class="puzzleLevel">A</span>stonishingly <span class="puzzleLevel">A</span>dvanced puzzles]</span>
+	  </div>
+	</button>
+
+	<!--
+        <button id="Blevel"  class="level" onclick="BSP.showBlevel();">
+	  <span class="puzzleLevel">B puzzles</span><br />
+	  <div style="text-align: left; font-size: smaller;">	  
+	    * Beginner
+	  </div>
+	</button>
+	<br />
+	<button id="Alevel" class="level" onclick="BSP.showAlevel();">
+	  <span class="puzzleLevel">A puzzles</span><br />
+	  <div style="text-align: left; font-size: smaller;">	  
+	    * Advanced
+	  </div>
+	</button>
+	<br />
+	<button id="AAlevel"  class="level" onclick="BSP.showAAlevel();">
+	  <span class="puzzleLevel">AA puzzles</span><br />
+	  <div style="text-align: left; font-size: smaller; color: white;">
+	    * Amazingly<br />&nbsp;&nbsp;* Advanced
+	  </div>
+	</button>
+	<br />
+	<button id="AAAlevel"  class="level" onclick="BSP.showAAAlevel();">
+	  <span class="puzzleLevel">AAA puzzles</span><br />	  
+	  <div style="text-align: left; font-size: smaller;">
+	  * Absolutely<br />
+	  &nbsp;&nbsp;* Astonishingly<br >
+	  &nbsp;&nbsp;&nbsp;&nbsp;*  Advanced
+	  </div>
+	</button>
+	-->
+	
+    </div>
+    <div id="footerPuzzle">
+      <div id="footerText">
+	<span id="puzzleNumber"></span>
+	<span id="numberSteps"></span>
+      </div>
+      <div id="footerButtons">
+	<button id="undo" onclick="BSP.undo();">UNDO</button>
+	<button id="reset" onclick="BSP.reset();">RESET</button>
+      </div>
+    </div>
+    <div id="footerHome">
+	<button id="helpBtn" onclick="">
+	  <img id="help" src="./pics/help.png" style="width: 25px;"/></button>
+    </div>    
+
+    
+  </body>
+</html>

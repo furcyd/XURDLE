@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="./code.js"></script> 
+  </head>
+  <body id="body" onload="TEST.showHome();">
+    <div id="header">
+      header
+    </div>
+    <div id="main">
+      <div id="mainHome">HOME</div>
+      <div id="mainScreen1">Screen 1</div>
+      <div id="mainScreen2">Screen 2</div>      
+    </div>
+    <div id="footer">
+      <div id="footerHome">
+	<button id="footerHomeSreen1" onClick="TEST.showScreen1();">
+	  GO TO 1</button>
+	<button id="footerHomeSreen2" onClick="TEST.showScreen2();">
+	  GO TO 2</button>	
+      </div>
+      <div id="footerScreen1">
+	<button id="footerScreen1Home" onClick="TEST.showHome();">
+	  GO HOME</button>
+	<button id="footerScreen1Sreen2" onClick="TEST.showScreen2();">
+	  GO TO 2</button>	
+      </div>
+      <div id="footerScreen2">
+	<button id="footerScreen2Home" onClick="TEST.showHome();">
+	  GO HOME</button>
+	<button id="footerScreen2Sreen1" onClick="TEST.showScreen1();">
+	  GO TO 1</button>	
+      </div>      	    
+    </div>            
+  </body>
+</html>
