@@ -67,7 +67,7 @@ var BSP = {};
 		html = '<img class="puzzleIcon" src="./pics/lines.png" />' +
 		    '<div class="puzzleText"><span>Puzzle B' + i + '</span>' +
 		    '<br /><span id="puzzleB' + 1 + 'score" ' +
-		    'class="puzzleScore">? / ?</span><br />';
+		    'class="puzzleScore">? / ?</span>';
 		var puzzle = document.createElement("button");
 		puzzle.style.setProperty("id", 'puzzleB' + i );
 		puzzle.onclick =
@@ -75,6 +75,7 @@ var BSP = {};
 		puzzle.classList.add( 'puzzleNumber' );
 		puzzle.innerHTML = html;
 		parent.appendChild(puzzle);
+		parent.appendChild(document.createElement("br"));
 	    }
 	}
 	hideBlevel();
@@ -382,7 +383,8 @@ var BSP = {};
 	document.getElementById("numberSteps").innerHTML =
 	    numberSteps + " steps";	
 	*/
-	container.addEventListener('mouseup', function (event)
+
+	var handleMouseUp = function (event)
 	{
 	    if (draggedToken)
 	    {
@@ -410,7 +412,9 @@ var BSP = {};
 		}
 		createAction( [ tokens[draggedToken.id], direction] );
 	    }
-	});
+	};
+	container.addEventListener('mouseup', handleMouseUp );
+	container.addEventListener('touchend', handleMouseUp );	
 				  
 	top = getTop(container);
 	left = getLeft(container);
@@ -444,14 +448,16 @@ var BSP = {};
 	    else
 		token.style.backgroundSize = (tokenSize-5) + "px "
 		+ (tokenSize-5) + "px";
-	    container.addEventListener('mousedown', function (event) {
+	    var handleMouseDown = function (event) {
 		startX = event.pageX;
 		startY = event.pageY;
 		if (event.target.id === "0") // the target
 		    draggedToken = null;
 		else
 		    draggedToken = event.target;
-	    });
+	    };
+	    container.addEventListener('mousedown', handleMouseDown);
+	    container.addEventListener('touchstart', handleMouseDown);	    
 	    tokens.push(token);	    
 	    container.appendChild(token);
 	}
