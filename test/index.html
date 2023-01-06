@@ -52,30 +52,59 @@
       <div id="mainBlevel" class="mainLevel">
 	<div id="mainBlevelHeader" class="mainLevelHeader">
 	  B  puzzles<br />
-	  * Beginner level
+	  Beginner level
 	</div>
 	<div id="mainBpuzzles" class="mainPuzzles"></div>
       </div>
-      <div id="mainAlevel" class="mainLevel">A level puzzles</div>
-      <div id="mainAAlevel" class="mainLevel">AA level puzzles</div>
-      <div id="mainAAAlevel" class="mainLevel">AAA level puzzles</div>
+      <div id="mainAlevel" class="mainLevel">
+	<div id="mainAlevelHeader" class="mainLevelHeader">
+	  A  puzzles<br />
+	  Advanced level
+	</div>
+	<div id="mainApuzzles" class="mainPuzzles"></div>	
+      </div>
+      <div id="mainAAlevel" class="mainLevel">
+		<div id="mainAAlevelHeader" class="mainLevelHeader">
+	  AA  puzzles<br />
+	  "Amazingly Advanced" level
+	</div>
+	<div id="mainAApuzzles" class="mainPuzzles"></div>	
+      </div>
+      <div id="mainAAAlevel" class="mainLevel">
+      	<div id="mainAAAlevelHeader" class="mainLevelHeader">
+	  AAA  puzzles<br />
+	  "Absolutely Astonishingly Advanced" level
+	</div>
+	<div id="mainAAApuzzles" class="mainPuzzles"></div>	
+      </div>
       <div id="mainPuzzle">
+	<div id="puzzleID"></div>
 	<div id="container"></div>
-	<div>Under puzzle</div>
+	<div id="puzzleSteps"></div>
       </div>
       
     </div>
     <div id="footer">
       <div id="footerHome">
-	<button onClick="BSP.showHelp();">
+	<button type="button" onClick="BSP.showHelp();">
 	  Help!</button>
       </div>
       <div id="footerLevel">
-	<button id="homeBtn" onClick="BSP.showHome();">
+	<button  type="button" onClick="BSP.showHome();">
 	  Home</button>	
-	<button onClick="BSP.showHelp();">
+	<button  type="button" onClick="BSP.showHelp();">
 	  Help!</button>
       </div>
+      <div id="footerPuzzle">
+	<button type="button" onClick="BSP.showHome();">
+	  Home</button>		
+	<button type="button" onClick="BSP.undo();">
+	  Undo</button>	
+	<button type="button" onClick="BSP.reset();">
+	  Reset</button>
+      </div>
+
+
     </div>            
   </body>
 </html>
