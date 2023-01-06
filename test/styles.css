@@ -27,7 +27,7 @@ div {
     justify-content: center;
     align-items: center;
     background-color: rgb(120,120,250);
-    color: white;
+    color: rgb(220, 20, 60);
     border-radius: 10px 10px 0px 0px;
 }
 
@@ -175,7 +175,7 @@ div {
     border: black 2px solid;
     border-radius: 10px;
     margin-bottom: 10px;
-    width: 290px;
+    width: 340px;
     background-color: rgb(120,120,250);
     color: white;
     font-weight: 500;
@@ -188,17 +188,31 @@ div {
 .puzzleIcon, .puzzleText {
     display: inline-block;
     text-align: left;
+    margin: 0 10px;    
 }
 
 .puzzleIcon {
-    width: 50px;
+    width: 70px;
 }
 
 .puzzleText {
-    
     width: 200px;
 }
 
 .mainLevel button, .mainLevel button div {
     display: inline-block;
+}
+
+
+#container {
+    display: relative;
+    background: url("./pics/sq.png");
+}
+
+.token {
+    margin: 0;
+    padding: 0px;
+    display:absolute;
+    text-align: center;
+    border: none;
 }
