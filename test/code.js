@@ -1,21 +1,17 @@
-var TEST = {};
+var BSP = {};
 
 (function() {
     "use strict";
 
-    var header = null, main, footer, body;
+    // HTML elements
+    var header = null, main, footer;
     var mainHome, mainScreen1, mainScreen2;
     var footerHome, footerScreen1, footerScreen2;
 
-    function getBodyHeight()
-    {
-	return 
-    }
     function showHome()
     {
-	if (! body) // when first loading the page
+	if (! header) // when first loading the page
 	{
-	    body = document.getElementById("body");
 	    header = document.getElementById("header");
 	    main = document.getElementById("main");
 	    mainHome = document.getElementById("mainHome");
@@ -24,22 +20,20 @@ var TEST = {};
 	    footer = document.getElementById("footer");
 	    footerHome = document.getElementById("footerHome");
 	    footerScreen1 = document.getElementById("footerScreen1");
-	    footerScreen2 = document.getElementById("footerScreen2");	    
-	    body.style.width = "100vw";
-	    header.style.height = "30px";
-	    //console.log( getBodyHeight() );
-	    main.style.height = (window.innerHeight - 80) + "px"
-	    mainHome.style.height = "100%";
+	    footerScreen2 = document.getElementById("footerScreen2");
+	    // header is 40-px high
+	    // footer is 40-px high
+	    // zubtract 20 extra pixels to fit vertically on iPhone XR!!!
+	    main.style.height = (window.innerHeight - 100) + "px"
+	    //mainHome.style.height = "100%";	    
 	    mainScreen1.style.height = "100%";
 	    mainScreen2.style.height = "100%";	    	    
-	    footerHome.style.height = "30px";
-	    footerScreen1.style.height = "30px";
-	    footerScreen2.style.height = "30px";	    	    
 	}
 	hideScreen1();
 	hideScreen2();
-	mainHome.style.display = "block";
-	footerHome.style.display = "block";	
+	mainHome.style.height = "100%";
+	mainHome.style.width = "100%";	
+	footerHome.style.display = "flex";	
     }
 
     function hideHome()
@@ -62,22 +56,27 @@ var TEST = {};
 
     function showScreen1()
     {
-	mainScreen1.style.display = "block";
-	footerScreen1.style.display = "block";
+	mainScreen1.style.display = "flex";
+	footerScreen1.style.display = "flex";
 	hideHome();
 	hideScreen2();
     }
 
     function showScreen2()
     {
-	mainScreen2.style.display = "block";
-	footerScreen2.style.display = "block";
+	mainScreen2.style.display = "flex";
+	footerScreen2.style.display = "flex";
 	hideHome();
 	hideScreen1();
     }    
 
-    TEST.showHome = showHome;
-    TEST.showScreen1 = showScreen1;
-    TEST.showScreen2 = showScreen2;        
+    function showHelp()
+    {
+    }
+    
+    BSP.showHome = showHome;
+    BSP.showScreen1 = showScreen1;
+    BSP.showScreen2 = showScreen2;
+    BSP.showHelp = showHelp; 
 })();
  

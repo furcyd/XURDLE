@@ -1,81 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Test</title>
+    <title>Biscuit Slider puzzle</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Schoolbell&v1" rel="stylesheet">
     <script src="./code.js"></script> 
   </head>
-  <body id="body" onload="TEST.showHome();">
-    <div id="header">
-      header
+  <body id="body" onload="BSP.showHome();">
+    <div id="header">      
+      <img id="lines" src="./pics/lines.png" />
+      <div id="name">
+	<span class="slantedLeft20">Biscuit</span>
+	<span class="slantedLeft25">S</span>
+	<span class="slantedLeft25">l</span>
+	<span class="slantedLeft30">i</span>
+	<span class="slantedLeft35">d</span>
+	<span class="slantedLeft40">e</span>
+	<span class="slantedLeft45">r</span>
+      </div>
+
     </div>
     <div id="main">
-      <div id="mainHome">HOME</div>
+      <div id="mainHome">
+	<div>Pick a difficulty level</div>
+	<div>
+	  <button type="button" id="levelBbtn">
+	    <img src="./pics/B.png"/><span>Level B</span>
+	    <span>[50  puzzles]</span>
+	  </button>
+	  <button type="button" id="levelAbtn">
+	    <img src="./pics/A.png"/><span>Level A</span>
+	    <span>[50  puzzles]</span>
+	  </button>
+	  <button type="button" id="levelAAbtn">
+	    <img src="./pics/AA.png"/><span>Level AA</span>
+	    <span>[100  puzzles]</span>
+	  </button>
+	  <button type="button" id="levelAbtn">
+	    <img src="./pics/AAA.png"/><span>Level AAA</span>
+	    <span>[1000 puzzles]</span>
+	  </button>	  	  
+	</div>
+      </div>
       <div id="mainScreen1">Screen 1</div>
-      <div id="mainScreen2">
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />
-	Screen 2<br />																																						
-      </div>      
+      <div id="mainScreen2">Screen 2</div>
     </div>
-    <div id="footer">
-      <div id="footerHome">
-	<button id="footerHomeSreen1" onClick="TEST.showScreen1();">
-	  GO TO 1</button>
-	<button id="footerHomeSreen2" onClick="TEST.showScreen2();">
-	  GO TO 2</button>	
+      <div id="footer">
+	<div id="footerHome">
+	<button id="footerHomeSreen1" onClick="BSP.showHelp();">
+	  Help!</button>
       </div>
       <div id="footerScreen1">
-	<button id="footerScreen1Home" onClick="TEST.showHome();">
+	<button id="footerScreen1Home" onClick="BSP.showHome();">
 	  GO HOME</button>
-	<button id="footerScreen1Sreen2" onClick="TEST.showScreen2();">
+	<button id="footerScreen1Sreen2" onClick="BSP.showScreen2();">
 	  GO TO 2</button>	
       </div>
       <div id="footerScreen2">
-	<button id="footerScreen2Home" onClick="TEST.showHome();">
+	<button id="footerScreen2Home" onClick="BSP.showHome();">
 	  GO HOME</button>
-	<button id="footerScreen2Sreen1" onClick="TEST.showScreen1();">
+	<button id="footerScreen2Sreen1" onClick="BSP.showScreen1();">
 	  GO TO 1</button>	
       </div>      	    
     </div>            
   </body>
 </html>
+
+
+<!--
+	<div class="mainLevelBtn">
+	  <img id="easyPic" src="./pics/B.png"/>
+	  <span>Level B [100 puzzles]</span>
+	</div>
+	<br />
+	<div class="mainLevelBtn" id="intermediateBtn">
+	  <span><img id="intermediatePic" src="./pics/A.png"/>
+	    Level A [100 puzzles]</span>
+	</div>
+	<br />	
+	<div class="mainLevelBtn" id="hardBtn">
+	  <img id="hardPic" src="./pics/AA.png"/>
+	  <span>Level AA [500 puzzles]</span>
+	</div>
+	<br />	
+-->
