@@ -94,9 +94,9 @@ div {
     align-items: center;
     justify-content: space-between;
     font-weight: 700;
-    font-size: 25px;
+    font-size: 20px;
     font-family: Bradley Hand, cursive;
-    width: 70%;
+    width: 90%;
     margin: auto;
     border: 10px groove rgb(150,150,250);
     margin-bottom: 20px;
@@ -104,8 +104,8 @@ div {
 }
 
 #mainHome button img {
-    height: 25px;
-    margin-right: 20px;
+    height: 20px;
+    margin-right: 5px;
 }
 
 #mainScreen2 {
