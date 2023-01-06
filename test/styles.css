@@ -85,34 +85,42 @@ div {
 }
 
 #mainHome div {
-    padding: 15px;
-    padding-top: 30px;
+
+    padding-top: 20px;
 }
 
 #mainHome button {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: block;
     font-weight: 700;
     font-size: 20px;
     font-family: Bradley Hand, cursive;
-    width: 90%;
+    width: 70%;
     margin: auto;
     border: 10px groove rgb(150,150,250);
-    margin-bottom: 20px;
-    background-color: rgb(220,220,255);    
+    margin-bottom: 10px;
+    background-color: rgb(220,220,255);
+    padding: 5px;
+}
+
+.mainLevel  {
+    background-color: rgb(200,200,250);
+    display: block;
+    background-color: rgb(200,200,250);
+    text-align: center;
+    width: 80%;
+    margin: auto;
+
 }
 
 #mainHome button img {
     height: 20px;
-    margin-right: 5px;
 }
 
 #mainScreen2 {
     overflow: auto;
 }
 
-#footer, #footerHome {
+#footer, #footerHome, #footerLevel {
     display: flex;
     width: 100%;
     height: 40px;
@@ -137,4 +145,8 @@ div {
     background-color: rgb(120,120,250);
     border-radius: 10px;
     font-family: Bradley Hand, cursive;
+}
+
+#homeBtn {
+    margin-right: 20px;
 }

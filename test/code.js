@@ -5,8 +5,8 @@ var BSP = {};
 
     // HTML elements
     var header = null, main, footer;
-    var mainHome, mainScreen1, mainScreen2;
-    var footerHome, footerScreen1, footerScreen2;
+    var mainHome, mainBlevel, mainAlevel, mainAAlevel, mainAAAlevel;
+    var footerHome, footerLevel;
 
     function showHome()
     {
@@ -15,24 +15,33 @@ var BSP = {};
 	    header = document.getElementById("header");
 	    main = document.getElementById("main");
 	    mainHome = document.getElementById("mainHome");
-	    mainScreen1 = document.getElementById("mainScreen1");
-	    mainScreen2 = document.getElementById("mainScreen2");
+	    mainBlevel = document.getElementById("mainBlevel");
+	    mainAlevel = document.getElementById("mainAlevel");
+	    mainAAlevel = document.getElementById("mainAAlevel");
+	    mainAAAlevel = document.getElementById("mainAAAlevel");
 	    footer = document.getElementById("footer");
 	    footerHome = document.getElementById("footerHome");
-	    footerScreen1 = document.getElementById("footerScreen1");
-	    footerScreen2 = document.getElementById("footerScreen2");
+	    footerLevel = document.getElementById("footerLevel");
 	    // header is 40-px high
 	    // footer is 40-px high
 	    // zubtract 20 extra pixels to fit vertically on iPhone XR!!!
 	    main.style.height = (window.innerHeight - 100) + "px"
-	    //mainHome.style.height = "100%";	    
-	    mainScreen1.style.height = "100%";
-	    mainScreen2.style.height = "100%";	    	    
+	    mainHome.style.height = "100%";
+	    mainHome.style.width = "100%";		    
+	    mainBlevel.style.height = "100%";
+	    mainBlevel.style.width = "100%";	    
+	    mainAlevel.style.height = "100%";
+	    mainAlevel.style.width = "100%";	    
+	    mainAAlevel.style.height = "100%";
+	    mainAAlevel.style.width = "100%";	    
+	    mainAAAlevel.style.height = "100%";
+	    mainAAAlevel.style.width = "100%";	    
 	}
-	hideScreen1();
-	hideScreen2();
-	mainHome.style.height = "100%";
-	mainHome.style.width = "100%";	
+	hideBlevel();
+	hideAlevel();
+	hideAAlevel();
+	hideAAAlevel();
+	mainHome.style.display = "block";
 	footerHome.style.display = "flex";	
     }
 
@@ -42,32 +51,57 @@ var BSP = {};
 	footerHome.style.display = "none";		
     }
 
-    function hideScreen1()
+    function hideBlevel()
     {
-	mainScreen1.style.display = "none";
-	footerScreen1.style.display = "none";		
+	mainBlevel.style.display = "none";
+	footerLevel.style.display = "none";		
     }
 
-    function hideScreen2()
+    function hideAlevel()
     {
-	mainScreen2.style.display = "none";
-	footerScreen2.style.display = "none";		
+	mainAlevel.style.display = "none";
+	footerLevel.style.display = "none";		
     }    
 
-    function showScreen1()
+    function hideAAlevel()
     {
-	mainScreen1.style.display = "flex";
-	footerScreen1.style.display = "flex";
+	mainAAlevel.style.display = "none";
+	footerLevel.style.display = "none";		
+    }    
+
+    function hideAAAlevel()
+    {
+	mainAAAlevel.style.display = "none";
+	footerLevel.style.display = "none";		
+    }    
+
+    
+    function showBlevel()
+    {
 	hideHome();
-	hideScreen2();
+	mainBlevel.style.display = "block";
+	footerLevel.style.display = "flex";
     }
 
-    function showScreen2()
+    function showAlevel()
     {
-	mainScreen2.style.display = "flex";
-	footerScreen2.style.display = "flex";
 	hideHome();
-	hideScreen1();
+	mainAlevel.style.display = "block";
+	footerLevel.style.display = "flex";
+    }
+
+    function showAAlevel()
+    {
+	hideHome();
+	mainAAlevel.style.display = "block";
+	footerLevel.style.display = "flex";
+    }    
+
+    function showAAAlevel()
+    {
+	hideHome();
+	mainAAAlevel.style.display = "block";
+	footerLevel.style.display = "flex";
     }    
 
     function showHelp()
@@ -75,8 +109,10 @@ var BSP = {};
     }
     
     BSP.showHome = showHome;
-    BSP.showScreen1 = showScreen1;
-    BSP.showScreen2 = showScreen2;
+    BSP.showBlevel = showBlevel;
+    BSP.showAlevel = showAlevel;
+    BSP.showAAlevel = showAAlevel;
+    BSP.showAAAlevel = showAAAlevel;
     BSP.showHelp = showHelp; 
 })();
  

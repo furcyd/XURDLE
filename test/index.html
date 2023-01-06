@@ -27,63 +27,44 @@
       <div id="mainHome">
 	<div>Pick a difficulty level</div>
 	<div>
-	  <button type="button" id="levelBbtn">
-	    <img src="./pics/B.png"/><span>Level B</span>
+	  <button type="button" id="levelBbtn" onClick="BSP.showBlevel();">
+	    <span><img src="./pics/B.png"/></span><br />
+	    <span>Level B</span><br />
 	    <span>[50  puzzles]</span>
 	  </button>
-	  <button type="button" id="levelAbtn">
-	    <img src="./pics/A.png"/><span>Level A</span>
-	    <span>[50  puzzles]</span>
+	  <button type="button" id="levelAbtn" onClick="BSP.showAlevel();">
+	    <img src="./pics/A.png"/><br />
+	    Level A<br />
+	    [50  puzzles]
 	  </button>
-	  <button type="button" id="levelAAbtn">
-	    <img src="./pics/AA.png"/><span>Level AA</span>
+	  <button type="button" id="levelAAbtn" onClick="BSP.showAAlevel();">
+	    <img src="./pics/AA.png"/><br />
+	    <span>Level AA</span><br />
 	    <span>[100  puzzles]</span>
 	  </button>
-	  <button type="button" id="levelAbtn">
-	    <img src="./pics/AAA.png"/><span>Level AAA</span>
+	  <button type="button" id="levelAbtn" onClick="BSP.showAAAlevel();">
+	    <img src="./pics/AAA.png"/><br />
+	    <span>Level AAA</span><br />
 	    <span>[1000 puzzles]</span>
 	  </button>	  	  
 	</div>
       </div>
-      <div id="mainScreen1">Screen 1</div>
-      <div id="mainScreen2">Screen 2</div>
+      <div id="mainBlevel" class="mainLevel">B level puzzles</div>
+      <div id="mainAlevel" class="mainLevel">A level puzzles</div>
+      <div id="mainAAlevel" class="mainLevel">AA level puzzles</div>
+      <div id="mainAAAlevel" class="mainLevel">AAA level puzzles</div>
     </div>
-      <div id="footer">
-	<div id="footerHome">
-	<button id="footerHomeSreen1" onClick="BSP.showHelp();">
+    <div id="footer">
+      <div id="footerHome">
+	<button onClick="BSP.showHelp();">
 	  Help!</button>
       </div>
-      <div id="footerScreen1">
-	<button id="footerScreen1Home" onClick="BSP.showHome();">
-	  GO HOME</button>
-	<button id="footerScreen1Sreen2" onClick="BSP.showScreen2();">
-	  GO TO 2</button>	
+      <div id="footerLevel">
+	<button id="homeBtn" onClick="BSP.showHome();">
+	  Home</button>	
+	<button onClick="BSP.showHelp();">
+	  Help!</button>
       </div>
-      <div id="footerScreen2">
-	<button id="footerScreen2Home" onClick="BSP.showHome();">
-	  GO HOME</button>
-	<button id="footerScreen2Sreen1" onClick="BSP.showScreen1();">
-	  GO TO 1</button>	
-      </div>      	    
     </div>            
   </body>
 </html>
-
-
-<!--
-	<div class="mainLevelBtn">
-	  <img id="easyPic" src="./pics/B.png"/>
-	  <span>Level B [100 puzzles]</span>
-	</div>
-	<br />
-	<div class="mainLevelBtn" id="intermediateBtn">
-	  <span><img id="intermediatePic" src="./pics/A.png"/>
-	    Level A [100 puzzles]</span>
-	</div>
-	<br />	
-	<div class="mainLevelBtn" id="hardBtn">
-	  <img id="hardPic" src="./pics/AA.png"/>
-	  <span>Level AA [500 puzzles]</span>
-	</div>
-	<br />	
--->
