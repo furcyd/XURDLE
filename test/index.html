@@ -29,27 +29,40 @@
 	<div>
 	  <button type="button" id="levelBbtn" onClick="BSP.showBlevel();">
 	    <span><img src="./pics/B.png"/></span><br />
-	    <span>Level B</span><br />
+	    <span>Level B</span>
 	    <span>[50  puzzles]</span>
 	  </button>
 	  <button type="button" id="levelAbtn" onClick="BSP.showAlevel();">
 	    <img src="./pics/A.png"/><br />
-	    Level A<br />
+	    Level A
 	    [50  puzzles]
 	  </button>
 	  <button type="button" id="levelAAbtn" onClick="BSP.showAAlevel();">
 	    <img src="./pics/AA.png"/><br />
-	    <span>Level AA</span><br />
+	    <span>Level AA</span>
 	    <span>[100  puzzles]</span>
 	  </button>
 	  <button type="button" id="levelAbtn" onClick="BSP.showAAAlevel();">
 	    <img src="./pics/AAA.png"/><br />
-	    <span>Level AAA</span><br />
+	    <span>Level AAA</span>
 	    <span>[1000 puzzles]</span>
 	  </button>	  	  
 	</div>
       </div>
-      <div id="mainBlevel" class="mainLevel">B level puzzles</div>
+      <div id="mainBlevel" class="mainLevel">
+	<div id="mainBlevelHeader" class="mainLevelHeader">
+	  B  puzzles<br />
+	  * Beginner level
+	</div>
+	<div id="mainBpuzzles" class="mainPuzzles">
+	  <button id="puzzleB1" class="puzzleNumber">
+	    <img class="puzzleIcon" src="./pics/lines.png" />
+	    <div class="puzzleText">
+	      <span>Puzzle B1</span><br />
+	      <span id="puzzleB1score" class="puzzleScore">? / ?</span>
+	    </div>
+	  </button>
+      </div>
       <div id="mainAlevel" class="mainLevel">A level puzzles</div>
       <div id="mainAAlevel" class="mainLevel">AA level puzzles</div>
       <div id="mainAAAlevel" class="mainLevel">AAA level puzzles</div>

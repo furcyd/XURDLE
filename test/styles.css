@@ -80,12 +80,11 @@ div {
     display: block;
     background-color: rgb(200,200,250);
     text-align: center;
-    width: 80%;
+    width: 90%;
     margin: auto;
 }
 
 #mainHome div {
-
     padding-top: 20px;
 }
 
@@ -94,31 +93,32 @@ div {
     font-weight: 700;
     font-size: 20px;
     font-family: Bradley Hand, cursive;
-    width: 70%;
+    width: 90%;
     margin: auto;
     border: 10px groove rgb(150,150,250);
     margin-bottom: 10px;
     background-color: rgb(220,220,255);
+    color: rgb(120,120,250);
     padding: 5px;
 }
 
 .mainLevel  {
     background-color: rgb(200,200,250);
-    display: block;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-rows: 103px; auto;
     background-color: rgb(200,200,250);
     text-align: center;
     width: 80%;
     margin: auto;
-
+    padding: 10px;
+    overflow: auto;
 }
 
 #mainHome button img {
     height: 20px;
 }
 
-#mainScreen2 {
-    overflow: auto;
-}
 
 #footer, #footerHome, #footerLevel {
     display: flex;
@@ -149,4 +149,56 @@ div {
 
 #homeBtn {
     margin-right: 20px;
+}
+
+.mainLevelHeader {
+    box-sizing: border-box;
+    width: max-content;
+    margin: auto;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: rgb(120,120,250) 2px solid;
+    padding: 5px;
+}
+
+.mainPuzzles {
+    display: block;
+    height: inherit;
+    font-weight: 500;
+    font-size: 20px;
+
+    font-family: sans-serif;
+}
+
+.puzzleNumber {
+    margin: auto;
+    border: black 2px solid;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    width: 290px;
+    background-color: rgb(120,120,250);
+    color: white;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 20px;
+
+}
+
+
+.puzzleIcon, .puzzleText {
+    display: inline-block;
+    text-align: left;
+}
+
+.puzzleIcon {
+    width: 50px;
+}
+
+.puzzleText {
+    
+    width: 200px;
+}
+
+.mainLevel button, .mainLevel button div {
+    display: inline-block;
 }

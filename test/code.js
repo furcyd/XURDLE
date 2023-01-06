@@ -8,6 +8,25 @@ var BSP = {};
     var mainHome, mainBlevel, mainAlevel, mainAAlevel, mainAAAlevel;
     var footerHome, footerLevel;
 
+    var puzzleNumber, numberSteps;
+    var container, containerW = 5, containerH = 5, solutionLength;
+    var tokenSize; //  = 50;
+    var grid;
+    var tokens, numTokens, tokenRow, tokenCol;
+    var colors =
+	[ "target", "puck", "blue", "red", "black", "pink", "green",
+	  "yellow" ];
+    var top, left;
+    var id;
+
+    var direction, draggedDir = "", draggedToken = -1;
+    const delta = 6;
+    var startX = -1;
+    var startY = -1;
+    var actions;
+
+
+    
     function showHome()
     {
 	if (! header) // when first loading the page
@@ -24,18 +43,33 @@ var BSP = {};
 	    footerLevel = document.getElementById("footerLevel");
 	    // header is 40-px high
 	    // footer is 40-px high
-	    // zubtract 20 extra pixels to fit vertically on iPhone XR!!!
+	    // subtract 20 extra pixels to fit vertically on iPhone XR!!!
 	    main.style.height = (window.innerHeight - 100) + "px"
 	    mainHome.style.height = "100%";
 	    mainHome.style.width = "100%";		    
-	    mainBlevel.style.height = "100%";
-	    mainBlevel.style.width = "100%";	    
+	    mainBlevel.style.width = "100%";
+	    mainBlevel.style.height = "100%";	    	    
 	    mainAlevel.style.height = "100%";
 	    mainAlevel.style.width = "100%";	    
 	    mainAAlevel.style.height = "100%";
 	    mainAAlevel.style.width = "100%";	    
 	    mainAAAlevel.style.height = "100%";
-	    mainAAAlevel.style.width = "100%";	    
+	    mainAAAlevel.style.width = "100%";
+
+	    // create level screens
+	    var html, parent = document.getElementById("mainBpuzzles");
+	    for( var i = 1; i <= 50; i++)  // B level
+            {
+		html = '<img class="puzzleIcon" src="./pics/lines.png" />' +
+		    '<div class="puzzleText"><span>Puzzle B' + i + '</span>' +
+		    '<br /><span id="puzzleB' + 1 + 'score" ' +
+		    'class="puzzleScore">? / ?</span>';
+		var puzzle = document.createElement("button");
+		puzzle.style.setProperty("id", 'puzzleB' + i );
+		puzzle.classList.add( 'puzzleNumber' );
+		puzzle.innerHTML = html;
+		parent.appendChild(puzzle);
+	    }
 	}
 	hideBlevel();
 	hideAlevel();
