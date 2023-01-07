@@ -97,7 +97,12 @@ var BSP = {};
 		//parent.appendChild(document.createElement("br"));
 	    }
 
-
+	    body.addEventListener('touchmove',
+				  (e) => {
+				      e.preventDefault();
+				      e.stopPropagation();
+				      e.stopImmediatePropagation();
+				  });
 	    parent = document.getElementById("mainAApuzzles");
 	    parent.style.gridTemplateRows = "repeat(200,1fr)";
 	    for( var i = 101; i <= 200; i++)  // AA level
@@ -224,7 +229,7 @@ var BSP = {};
     
     function showPuzzle(level,number)
     {
-	window.ontouchmove = preventDefault;
+	//window.ontouchmove = preventDefault;
 	number = Number(number);
 	numberSteps = 0;
 	console.log("Puzzle " + level + number);
