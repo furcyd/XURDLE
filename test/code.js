@@ -5,11 +5,12 @@ var BSP = {};
 
     // HTML elements
     var header = null, main, footer;
-    var mainHome, mainBlevel, mainAlevel, mainAAlevel, mainAAAlevel;
-    var footerHome, footerLevel;
+    var mainHome, mainBlevel, mainAlevel, mainAAlevel, mainAAAlevel,
+	mainGameOver;
+    var footerHome, footerLevel, footerGameOver;
     var puzzleID, container, puzzleSteps;
     
-    var puzzleNumber, numberSteps;
+    var puzzleNumber, puzzleLevelNumber, numberSteps;
     var containerW, containerH, solutionLength;
     var tokenSize; //  = 50;
     var grid;
@@ -26,6 +27,17 @@ var BSP = {};
     var startY = -1;
     var actions;
 
+    function  getPuzzleLevelNumber(puzzleNumber)
+    {
+	if (puzzleNumber <= 50)
+	    return "B" + puzzleNumber;
+	else if (puzzleNumber <= 100)
+	    return "A" + puzzleNumber;
+	else if (puzzleNumber <= 200)
+	    return "AA" + puzzleNumber;
+	else if (puzzleNumber <= 1200)
+	    return "AAA" + puzzleNumber; 
+    }
 
     
     function showHome()
@@ -39,9 +51,11 @@ var BSP = {};
 	    mainAlevel = document.getElementById("mainAlevel");
 	    mainAAlevel = document.getElementById("mainAAlevel");
 	    mainAAAlevel = document.getElementById("mainAAAlevel");
+	    mainGameOver = document.getElementById("mainGameOver");	    
 	    footer = document.getElementById("footer");
 	    footerHome = document.getElementById("footerHome");
 	    footerLevel = document.getElementById("footerLevel");
+	    footerGameOver = document.getElementById("footerGameOver");	    
 	    // header is 40-px high
 	    // footer is 45-px high
 	    // subtract 20 extra pixels to fit vertically on iPhone XR!!!
@@ -57,7 +71,9 @@ var BSP = {};
 	    mainAAAlevel.style.height = "100%";
 	    mainAAAlevel.style.width = "100%";
 	    mainPuzzle.style.height = "100%";
-	    mainPuzzle.style.width = "100%";	    
+	    mainPuzzle.style.width = "100%";
+	    mainGameOver.style.height = "100%";
+	    mainGameOver.style.width = "100%";	    	    
 
 	    // create level screens
 	    var html, parent = document.getElementById("mainBpuzzles");
@@ -217,6 +233,22 @@ var BSP = {};
 	footerLevel.style.display = "flex";
     }    
 
+    function showGameOver()
+    {
+	hidePuzzle();
+	mainGameOver.innerHTML = "Puzzle " + puzzleLevelNumber +
+	    "<br /><br />" +
+	    "You won in " + numberSteps + " steps." + "<br /><br />" +
+	    "Well done!" + "<br /><br />";
+	if (solutionLength === numberSteps)
+	    mainGameOver.innerHTML += "The solution you found is optimal.";
+	else
+	    mainGameOver.innerHTML += "The optimal solution length is " +
+	    solutionLength + ".";
+	mainGameOver.style.display = "block";
+	footerGameOver.style.display = "flex";
+    }
+
     function showHelp()
     {
     }
@@ -260,6 +292,7 @@ var BSP = {};
     function decode(pbNumber)
     {
 	puzzleNumber = pbNumber;
+	puzzleLevelNumber = getPuzzleLevelNumber(puzzleNumber);
 	var index = 2*(pbNumber - 1);	
 	var code = [ codes[index], codes[index+1] ];
 	containerW = 5;
@@ -540,7 +573,9 @@ var BSP = {};
 
     function performSlide(action,incrementStepCounter, delay)
     {
+	console.log(action[0]);
 	var dx, dy;
+	var won = false;
 	const startX = left + tokenSize * action[3];
 	const startY = top + tokenSize * action[2];
 	const endX = left + tokenSize * action[5];
@@ -562,7 +597,11 @@ var BSP = {};
 	function slide()
 	{
 	    if (x === endX && y === endY)
+	    {
 		clearInterval(id);
+		if (won)
+		    showGameOver();
+	    }
 	    else
 	    {
 		x += dx;
@@ -572,8 +611,12 @@ var BSP = {};
 	    }
 	}
 	tokens[action[0]].BSP.row = action[4];
-	tokens[action[0]].BSP.col = action[5];	
-	grid[action[4]][action[5]] = action[0];
+	tokens[action[0]].BSP.col = action[5];
+
+	if (action[0] == 1 && grid[action[4]][action[5]] === 0)
+	    won = true;
+
+	grid[action[4]][action[5]] = action[0] + "";
 	grid[action[2]][action[3]] = "";	
 	slide();
 	if (incrementStepCounter)
@@ -585,7 +628,6 @@ var BSP = {};
 
     function updateStepsDisplay()
     {
-	console.log("here");
 	puzzleSteps.innerHTML =
 	    numberSteps + " step";
 	if (numberSteps !== 1)
